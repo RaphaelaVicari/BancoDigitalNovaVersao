@@ -4,12 +4,9 @@ import java.time.LocalDateTime;
 
 public class Pagamento {
 
-    private double valor;
+    private Double valor;
 
     private LocalDateTime dataPagamento;
-
-
-
 
     public double getValor() {
         return valor;

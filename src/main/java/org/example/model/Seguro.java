@@ -8,9 +8,9 @@ public class Seguro {
 
     private String descricaoCobertura;
 
-    private double valorSeguro;
+    private Double valorSeguro;
 
-    private double valorIndenizacao;
+    private Double valorIndenizacao;
 
     private LocalDateTime dataContratacao;
 

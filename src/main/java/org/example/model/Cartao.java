@@ -11,12 +11,6 @@ public class Cartao {
 
     private List<Pagamento> pagamentos;
 
-    private Long IdCartao;
-
-    private Long IdConta;
-
-    private Long IdTipoCartao;
-
     private String numeroCartao;
 
     private String senhaCartao;
@@ -27,46 +21,14 @@ public class Cartao {
 
     private LocalDateTime dataVencimento;
 
-    private Map<TipoCartao, Cartao> cartao;
-
     public Cartao() {
         this.seguros = new ArrayList<>();
         this.pagamentos = new ArrayList<>();
     }
 
-    public Cartao getCartaoCredito() {
-        return cartao.get(TipoCartao.CREDITO);
-    }
-
-    public Cartao getCartaoDebito() {
-        return cartao.get(TipoCartao.DEBITO);
-    }
-
-   /* public void solicitarCartaoCredito(Cartao cartao) {
-        if (cartao.equals(TipoCartao.CREDITO)) {
-            System.err.println("Erro, voce ja possui cartão de credito!");
-            return;
-        }
-
-        gerarCartao(cartao, TipoCartao.CREDITO);
-    }
-
-    public void solicitarCartaoDebito(Cartao cartao) {
-        if (cartao.equals(TipoCartao.DEBITO)) {
-            System.err.println("Erro,  voce ja possui cartão de debito!");
-            return;
-        }
-
-        gerarCartao(cartao, TipoCartao.DEBITO);
-    }
-
-    private void gerarCartao(Cartao cartao, TipoCartao tipoCartao) {
-        cartao.put(tipoCartao, cartao);
-    }
-
-    */
     public TipoCartao getTipoCartao() {
-        return tipoCartao; }
+        return tipoCartao;
+    }
 
     public void setTipoCartao(TipoCartao tipoCartao) {
         this.tipoCartao = tipoCartao;
@@ -86,30 +48,6 @@ public class Cartao {
 
     public void setPagamentos(List<Pagamento> pagamentos) {
         this.pagamentos = pagamentos;
-    }
-
-    public Long getIdCartao() {
-        return IdCartao;
-    }
-
-    public void setIdCartao(Long idCartao) {
-        IdCartao = idCartao;
-    }
-
-    public Long getIdConta() {
-        return IdConta;
-    }
-
-    public void setIdConta(Long idConta) {
-        IdConta = idConta;
-    }
-
-    public Long getIdTipoCartao() {
-        return IdTipoCartao;
-    }
-
-    public void setIdTipoCartao(Long idTipoCartao) {
-        IdTipoCartao = idTipoCartao;
     }
 
     public String getNumeroCartao() {
@@ -152,20 +90,9 @@ public class Cartao {
         this.dataVencimento = dataVencimento;
     }
 
-    public Map<TipoCartao, Cartao> getCartao() {
-        return cartao;
-    }
-
-    public void setCartao(Map<TipoCartao, Cartao> cartao) {
-        this.cartao = cartao;
-    }
-
     @Override
     public String toString() {
         return "Cartao{" +
-                "IdCartao='" + IdCartao + '\'' +
-                ", IdConta='" + IdConta + '\'' +
-                ", IdTipoCartao='" + IdTipoCartao + '\'' +
                 ", numeroCartao='" + numeroCartao + '\'' +
                 ", senhaCartao='" + senhaCartao + '\'' +
                 ", cvvCartao='" + cvvCartao + '\'' +

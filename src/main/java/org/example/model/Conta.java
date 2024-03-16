@@ -10,9 +10,7 @@ public class Conta {
 
     private List<Transferencia> transferencias;
 
-    private List<Cartao> cartoes;
-
-    private Long IdConta;
+    private Map<TipoCartao, List<Cartao>> cartoes;
 
     private String numeroConta;
 
@@ -22,44 +20,9 @@ public class Conta {
 
     private String senhaConta;
 
-    private String cpfCliente;
-
-    private Map<TipoConta, Conta> contas;
-
-   /* public Conta() {
-        this.contas = new HashMap<>();
-        this.endereco = new Endereco();
-    }*/
-
-    public Conta getContaCorrente() {
-        return contas.get(TipoConta.CORRENTE);
+    public Conta() {
+        cartoes = new HashMap<>();
     }
-
-    public Conta getContaPoupanca() {
-        return contas.get(TipoConta.POUPANCA);
-    }
-
-   /* public void abrirContaPoupanca(Conta conta) {
-        if (contas.containsKey(TipoConta.POUPANCA)) {
-            System.err.println("Erro, este cliente ja possui conta poupança!");
-            return;
-        }
-
-        abrirConta(conta, TipoConta.POUPANCA);
-    }
-
-    public void abrirContaCorrente(Conta conta) {
-        if (contas.containsKey(TipoConta.CORRENTE)) {
-            System.err.println("Erro, este cliente já possui conta corrente!");
-            return;
-        }
-
-        abrirConta(conta, TipoConta.CORRENTE);
-    }
-
-    private void abrirConta(Conta conta, TipoConta tipoConta) {
-        contas.put(tipoConta, conta);
-    }*/
 
     public TipoConta getTipoConta() {
         return tipoConta;
@@ -75,22 +38,6 @@ public class Conta {
 
     public void setTransferencias(List<Transferencia> transferencias) {
         this.transferencias = transferencias;
-    }
-
-    public List<Cartao> getCartoes() {
-        return cartoes;
-    }
-
-    public void setCartoes(List<Cartao> cartoes) {
-        this.cartoes = cartoes;
-    }
-
-    public Long getIdConta() {
-        return IdConta;
-    }
-
-    public void setIdConta(Long idConta) {
-        IdConta = idConta;
     }
 
     public String getNumeroConta() {
@@ -125,31 +72,14 @@ public class Conta {
         this.senhaConta = senhaConta;
     }
 
-    public String getCpfCliente() {
-        return cpfCliente;
-    }
-
-    public void setCpfCliente(String cpfCliente) {
-        this.cpfCliente = cpfCliente;
-    }
-
-    public Map<TipoConta, Conta> getContas() {
-        return contas;
-    }
-
-    public void setContas(Map<TipoConta, Conta> contas) {
-        this.contas = contas;
-    }
 
     @Override
     public String toString() {
         return "Conta{" +
-                "IdConta='" + IdConta + '\'' +
                 ", numeroConta='" + numeroConta + '\'' +
                 ", numeroAgencia='" + numeroAgencia + '\'' +
                 ", digitoConta='" + digitoConta + '\'' +
                 ", senhaConta='" + senhaConta + '\'' +
-                ", cpfCliente='" + cpfCliente +
                 '}';
     }
 

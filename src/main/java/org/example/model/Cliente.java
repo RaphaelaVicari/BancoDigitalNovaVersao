@@ -1,23 +1,17 @@
 package org.example.model;
 
+import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Cliente {
-    //TODO revisar erros
     private String cpfCliente;
 
     private String nomeCliente;
 
-    private String emailCliente;
-
-    private String numeroCelularCliente;
-
-    private String dataNascimentoCliente;
+    private LocalDate dataNascimentoCliente;
 
     private String senhaCliente;
-
-    private String enderecoCliente;
 
     private Double saldo;
 
@@ -102,27 +96,11 @@ public class Cliente {
         this.nomeCliente = nomeCliente;
     }
 
-    public String getEmailCliente() {
-        return emailCliente;
-    }
-
-    public void setEmailCliente(String emailCliente) {
-        this.emailCliente = emailCliente;
-    }
-
-    public String getNumeroCelularCliente() {
-        return numeroCelularCliente;
-    }
-
-    public void setNumeroCelularCliente(String numeroCelularCliente) {
-        this.numeroCelularCliente = numeroCelularCliente;
-    }
-
-    public String getDataNascimentoCliente() {
+    public LocalDate getDataNascimentoCliente() {
         return dataNascimentoCliente;
     }
 
-    public void setDataNascimentoCliente(String data) {
+    public void setDataNascimentoCliente(LocalDate data) {
         this.dataNascimentoCliente = data;
     }
 
@@ -134,25 +112,4 @@ public class Cliente {
         this.senhaCliente = senhaCliente;
     }
 
-    public String getEnderecoCliente() {
-        return enderecoCliente;
-    }
-
-    public void setEnderecoCliente(String enderecoCliente) {
-        this.enderecoCliente = enderecoCliente;
-    }
-
-    @Override
-    public String toString() {
-        return "Cliente{" +
-                "cpfCliente='" + cpfCliente + '\'' +
-                ", nomeCliente='" + nomeCliente + '\'' +
-                ", emailCliente='" + emailCliente + '\'' +
-                ", numeroCelularCliente='" + numeroCelularCliente + '\'' +
-                ", dataNascimentoCliente='" + dataNascimentoCliente + '\'' +
-                ", senhaCliente='" + senhaCliente + '\'' +
-                ", enderecoCliente='" + enderecoCliente + '\'' +
-                ", saldo=" + saldo +
-                '}';
-    }
 }

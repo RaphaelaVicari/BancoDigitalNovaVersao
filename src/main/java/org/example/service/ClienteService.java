@@ -5,6 +5,7 @@ import org.example.repository.ClienteRepository;
 import org.example.security.PasswordSecurity;
 
 import java.text.MessageFormat;
+import java.time.LocalDate;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -106,20 +107,12 @@ public class ClienteService {
             return null;
         }
 
-        if (!validarEmail(cliente.getEmailCliente())) {
-            System.err.println("E-mail inválido! Não foi possível cadastrar o cliente.");
-            return null;
-        }
 
-        if (!validarDataNascimento(cliente.getDataNascimentoCliente())) {
-            System.err.println("Data de Nascimento inválido ou campo vazio! Não foi possível cadastrar o cliente.");
-            return null;
-        }
+       // if (!validarDataNascimento(cliente.getDataNascimentoCliente())) {
+           // System.err.println("Data de Nascimento inválido ou campo vazio! Não foi possível cadastrar o cliente.");
+         //   return null;
+        //}
 
-        if (!validarNumeroCelular(cliente.getNumeroCelularCliente())) {
-            System.err.println("Número de celular inválido ou campo vazio! Não foi possível cadastrar o cliente.");
-            return null;
-        }
 
         if (cpfJaCadastrado(cliente.getCpfCliente())) {
             System.err.println("CPF já cadastrado! Não é possível cadastrar novamente.");
@@ -131,20 +124,12 @@ public class ClienteService {
             return null;
         }
 
-        if (cliente.getEnderecoCliente().trim().equals("")) {
-            System.err.println("Não e possivel cadastrar com o campo endereço vazio!");
-            return null;
-        }
 
         if (cliente.getSenhaCliente().trim().equals("")) {
             System.err.println("Não e possivel cadastrar com o campo senha vazio!");
             return null;
         }
         
-        cliente.setNumeroCelularCliente(formatarNumeroCelular(cliente.getNumeroCelularCliente()));
-
-        cliente.setSaldo(100);
-
         cliente.setSenhaCliente(passwordSecurity.encriptarSenha(cliente.getSenhaCliente()));
         return clienteRepository.cadastrarCliente(cliente);
 
