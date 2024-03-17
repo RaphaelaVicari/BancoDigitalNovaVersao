@@ -29,7 +29,7 @@ public class Main {
 
             String escolhaUsuario = input.nextLine();
             if (!FuncoesUtil.ehNumero(escolhaUsuario)) {
-                System.err.println("Opção inválida, utileze somente os número mostrados no Menu!");
+                System.err.println("Opção inválida, utilize somente os número mostrados no Menu!");
                 continue;
             }
             int escolha = Integer.parseInt(escolhaUsuario);
@@ -39,12 +39,12 @@ public class Main {
                     cadastrarNovoCliente(input);
                     break;
                 case 2:
-
+                    menuCartao(input);
                     break;
                 case 3:
                     return;
                 default:
-                    System.err.println("Opção inválida, utileze somente os número mostrados no Menu!");
+                    System.err.println("Opção inválida, utilize somente os número mostrados no Menu!");
             }
         }
     }
@@ -67,7 +67,7 @@ public class Main {
     }
 
     private static void preencherDataNascimento(Scanner input, Cliente novoCliente) {
-        while(true) {
+        while (true) {
             System.out.println("Digite a Data de Nascimento (ex:dd/MM/yyyy)");
             String dtNasc = input.nextLine();
 
@@ -78,7 +78,7 @@ public class Main {
 
                 LocalDate now = LocalDate.now().minusYears(18);
 
-                if(parse.isAfter(now)){
+                if (parse.isAfter(now)) {
                     System.err.println("Data invalida, precisa ser maior de 18 anos");
                     continue;
                 }
@@ -94,7 +94,7 @@ public class Main {
     }
 
     private static void preencherSenha(Scanner input, Cliente novoCliente) {
-        while(true) {
+        while (true) {
             String senha1 = validarEntradaPreenchida(input,
                     "Digite a senha",
                     "Senha não preenchida");
@@ -103,7 +103,7 @@ public class Main {
                     "Digite novamente a Senha para confirmação",
                     "Senha não preenchida");
 
-            if(!senha1.equals(senha2))
+            if (!senha1.equals(senha2))
                 continue;
 
             novoCliente.setSenhaCliente(PasswordSecurity.encriptarSenha(senha1));
@@ -148,21 +148,21 @@ public class Main {
 
     private static void escolherCategoria(Scanner input, Cliente novoCliente) {
         //TODO CATEGORIA
-        while(true) {
+        while (true) {
             System.out.println("Escolha a Categoria");
             System.out.println("(1) Comum");
             System.out.println("(2) Super");
             System.out.println("(3) Premium");
             String escolhaCategoriaStr = input.nextLine();
 
-            if(!FuncoesUtil.ehNumero(escolhaCategoriaStr)){
+            if (!FuncoesUtil.ehNumero(escolhaCategoriaStr)) {
                 System.err.println("Digite somente numeros");
                 continue;
             }
 
             CategoriaEnum categoria;
 
-            switch(Integer.parseInt(escolhaCategoriaStr)){
+            switch (Integer.parseInt(escolhaCategoriaStr)) {
                 case 1:
                     categoria = CategoriaEnum.COMUM;
                     break;
@@ -183,12 +183,12 @@ public class Main {
     }
 
     private static String validarEntradaPreenchida(Scanner input,
-                                         String mensagemDeEntrada,
-                                         String mensagemDeErro) {
-        while(true) {
+                                                   String mensagemDeEntrada,
+                                                   String mensagemDeErro) {
+        while (true) {
             System.out.println(mensagemDeEntrada);
             String valor = input.nextLine();
-            if(valor.isBlank()) {
+            if (valor.isBlank()) {
                 System.err.println(mensagemDeErro);
                 continue;
             }
@@ -219,5 +219,141 @@ public class Main {
         System.out.println(" 8 8888    ,88'  .888888888. `88888.  8         `Y8o.` 8 8888   `Y8.    ");
         System.out.println(" 8 888888888P   .8'       `8. `88888. 8            `Yo 8 8888     `Y8.  ");
     }
+
+
+    //menu para controle de cartao
+    public static void menuCartao(Scanner input) {
+        while (true) {
+            System.out.println("(1) Cartão de Debito");
+            System.out.println("(2) Cartão de Crédito");
+            System.out.println("(9) Voltar Para o Menu Anterior");
+
+            String escolherCartaoMenu = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolherCartaoMenu)) {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                continue;
+            }
+            int escolherCartaoMenuInt = Integer.parseInt(escolherCartaoMenu);
+
+            switch (escolherCartaoMenuInt) {
+                //cartao de debito
+                case 1:
+                    menuCartaoDebito(input);
+                    break;
+                //cartao de credito
+                case 2:
+                    menuCartaoCredito(input);
+                    break;
+                //Voltar menu
+                case 9:
+                    return;
+
+            }
+        }
+
+    }
+
+    public static void menuCartaoDebito(Scanner input) {
+        while (true) {
+            System.out.println("(1) Adquirir Cartão");
+            System.out.println("(2) Alterar Limite Diário");
+            System.out.println("(3) Cancelar Cartão");
+            System.out.println("(9) Voltar Para o Menu Anterior");
+
+            String escolherDebitoMenu = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolherDebitoMenu)) {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                continue;
+            }
+            int escolherDebitoMenuInt = Integer.parseInt(escolherDebitoMenu);
+
+            switch (escolherDebitoMenuInt) {
+                //adquirir cartao
+                case 1:
+                    break;
+                //Alterar limite diario
+                case 2:
+                    break;
+                //cancelar cartao
+                case 3:
+                    break;
+                //Voltar menu
+                case 9:
+                    return;
+
+            }
+        }
+    }
+
+    public static void menuCartaoCredito(Scanner input) {
+        while (true) {
+            System.out.println("(1) Adquirir Cartão");
+            System.out.println("(2) Alterar Limite");
+            System.out.println("(3) Seguro Cartão");
+            System.out.println("(4) Cancelar Cartão");
+            System.out.println("(9) Voltar Para o Menu Anterior");
+
+            String escolherCreditoMenu = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolherCreditoMenu)) {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                continue;
+            }
+            int escolherCreditoMenuInt = Integer.parseInt(escolherCreditoMenu);
+
+            switch (escolherCreditoMenuInt) {
+                //adquirir cartao
+                case 1:
+                    break;
+                //alterar limite
+                case 2:
+                    break;
+                //menu de seguro do cartao
+                case 3:
+                    menuSeguro(input);
+                    break;
+                //cancelar cartao
+                case 4:
+                    break;
+                //Voltar menu
+                case 9:
+                    return;
+
+            }
+        }
+    }
+
+    public static void menuSeguro(Scanner input) {
+        while (true) {
+            System.out.println("(1) Adquirir Seguro");
+            System.out.println("(2) Consultar Seguros Adquiridos ");
+            System.out.println("(3) Cancelar Seguro ");
+            System.out.println("(9) Voltar Para o Menu Anterior");
+
+            String escolherSeguroMenu = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolherSeguroMenu)) {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                continue;
+            }
+            int escolherSeguroMenuInt = Integer.parseInt(escolherSeguroMenu);
+
+            switch (escolherSeguroMenuInt) {
+                //adquirir seguro
+                case 1:
+                    break;
+                //consultar seguro
+                case 2:
+                    break;
+                //cancelar seguro
+                case 3:
+                    break;
+                //Voltar menu
+                case 9:
+                    return;
+
+            }
+
+        }
+    }
+
 }
 
