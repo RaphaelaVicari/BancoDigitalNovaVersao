@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class Transferencia {
 
     private ContaTransferencia contaOrigem;
+
     private ContaTransferencia contaDestino;
 
     private Double valorTransferido;

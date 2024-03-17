@@ -5,7 +5,6 @@ import org.example.repository.ClienteRepository;
 import org.example.security.PasswordSecurity;
 
 import java.text.MessageFormat;
-import java.time.LocalDate;
 import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -162,6 +161,17 @@ public class ClienteService {
             return null;
         }
         return clienteRepository.consultarClientePorCpf(cpfUtil.getCPF(true));
+    }
+
+    static boolean editarPerfilUsuario(Cliente cliente) {
+
+        cliente.setCpfCliente(cliente.getCpfCliente());
+        cliente.setNomeCliente(cliente.getNomeCliente());
+        cliente.setEndereco(cliente.getEndereco());
+        cliente.setDataNascimentoCliente(cliente.getDataNascimentoCliente());
+
+
+        return true;
     }
 
     // Adicionar o método para validar CPF
