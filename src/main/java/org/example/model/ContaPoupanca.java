@@ -1,17 +1,15 @@
 package org.example.model;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ContaPoupanca extends Conta {
 
         private List<Transferencia> transferencias;
-        private Long IdContaPoupanca;
-        private Long IdConta;
-        private DecimalFormat saldoContaPoupanca;
 
-        private DecimalFormat taxaRendimento;
+        private Double saldoContaPoupanca;
+
+        private Double taxaRendimento;
 
         public ContaPoupanca() {
             this.transferencias = new ArrayList<>();
@@ -27,35 +25,25 @@ public class ContaPoupanca extends Conta {
         this.transferencias = transferencias;
     }
 
-    public Long getIdContaPoupança() {
-        return IdContaPoupanca;
-    }
-
-    public void setIdContaPoupanca(Long idContaPoupanca) {
-        IdContaPoupanca = idContaPoupanca;
-    }
-
-    public DecimalFormat getSaldoContaPoupanca() {
+    public Double getSaldoContaPoupanca() {
         return saldoContaPoupanca;
     }
 
-    public void setSaldoContaPoupanca(DecimalFormat saldoContaPoupanca) {
+    public void setSaldoContaPoupanca(Double saldoContaPoupanca) {
         this.saldoContaPoupanca = saldoContaPoupanca;
     }
 
-    public DecimalFormat getTaxaRendimento() {
+    public Double getTaxaRendimento() {
         return taxaRendimento;
     }
 
-    public void setTaxaRendimento(DecimalFormat taxaRendimento) {
+    public void setTaxaRendimento(Double taxaRendimento) {
         this.taxaRendimento = taxaRendimento;
     }
 
     @Override
         public String toString() {
             return "ContaPoupanca{" +
-                    "IdContaPoupanca='" + IdContaPoupanca + '\'' +
-                    ", IdConta='" + IdConta + '\'' +
                     ", saldoContaPoupanca='" + saldoContaPoupanca + '\'' +
                     ", taxaRendimento='" + taxaRendimento + '\'' +
                     '}';

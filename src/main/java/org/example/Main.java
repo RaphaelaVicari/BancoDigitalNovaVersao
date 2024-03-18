@@ -1,14 +1,13 @@
 package org.example;
 
-import org.example.model.CategoriaEnum;
-import org.example.model.Cliente;
-import org.example.model.Endereco;
+import org.example.model.*;
 import org.example.security.PasswordSecurity;
 import org.example.util.FuncoesUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Random;
 import java.util.Scanner;
 
 public class Main {
@@ -84,22 +83,137 @@ public class Main {
     private static void cadastrarNovoCliente(Scanner input) {
         Cliente novoCliente = new Cliente();
 
+        //todo aplicar regex no cpf, deve conter pontuação
         novoCliente.setCpfCliente(validarEntradaPreenchida(input,
                 "Digite o CPF (ex:000.000.000-00)",
                 "CPF não preenchido"));
 
+        //todo aplicar regex no nome do cliente, deve ter mais de duas letras e nao pode conter numero
         novoCliente.setNomeCliente(validarEntradaPreenchida(input,
                 "Digite o Nome Completo",
                 "Nome não preenchido"));
 
         preencherDataNascimento(input, novoCliente);
         preencherEndereco(input, novoCliente);
-        escolherCategoria(input, novoCliente);
         preencherSenha(input, novoCliente);
+        criarConta(input, novoCliente);
+        escolherCategoria(input, novoCliente);
+
+    }
+
+    private static void criarConta(Scanner input, Cliente novoCliente) {
+
+        while (true) {
+            System.out.println("- MENU CRIAR CONTA -");
+            System.out.println("(1) Criar Conta Corrente");
+            System.out.println("(2) Criar Conta Poupança");
+            System.out.println("(3) Criar Conta Corrente e Conta Poupança");
+            String escolhaConta = input.nextLine();
+
+            if (!FuncoesUtil.ehNumero(escolhaConta)) {
+                System.err.println("Opção inválida, utilize somente os número mostrados no Menu!");
+                continue;
+            }
+            int escolhaContaCliente = Integer.parseInt(escolhaConta);
+
+            switch (escolhaContaCliente) {
+                case 1:
+                    criarContaCorrente(novoCliente, input);
+                    return;
+                case 2:
+                    criarContaPoupanca(novoCliente, input);
+                    return;
+                case 3:
+                    criarContaCorrente(novoCliente, input);
+                    criarContaPoupanca(novoCliente, input);
+                    return;
+                default:
+                    System.err.println("Opção inválida, utilize somente os número mostrados no Menu!");
+            }
+        }
+    }
+
+    private static void criarContaPoupanca(Cliente novoCliente, Scanner input) {
+
+        ContaPoupanca criarContaPoupanca = new ContaPoupanca();
+        Random gerarNumeroConta = new Random();
+
+        criarContaPoupanca.setTipoConta(TipoConta.POUPANCA);
+
+        criarContaPoupanca.setNumeroAgencia("0001");
+        System.out.println("AGENCIA: " + criarContaPoupanca.getNumeroAgencia());
+
+        criarContaPoupanca.setNumeroConta(String.valueOf(gerarNumeroConta.nextInt(9999) + 10000));
+        System.out.println("CONTA: " + criarContaPoupanca.getNumeroConta());
+        criarContaPoupanca.setDigitoConta("1");
+
+        double taxaMensal = 0;
+
+        switch (novoCliente.getCategoria()) {
+            case SUPER:
+                taxaMensal = 0.007;
+                break;
+            case COMUM:
+                taxaMensal = 0.005;
+                break;
+            case PREMIUM:
+                taxaMensal = 0.009;
+                break;
+            default:
+                System.err.println("Erro, cliente sem categoria!");
+                return;
+        }
+        System.out.println("RENDIMENTO MENSAL: " + taxaMensal * 100 + "%");
+
+        criarContaPoupanca.setTaxaRendimento(taxaMensal);
+        criarContaPoupanca.setSaldoContaPoupanca(0.00);
+        System.out.println("SALDO: " + criarContaPoupanca.getSaldoContaPoupanca());
+
+        novoCliente.abrirContaPoupanca(criarContaPoupanca);
+    }
+
+
+    private static void criarContaCorrente(Cliente novoCliente, Scanner input) {
+
+        ContaCorrente criarContaCorrente = new ContaCorrente();
+        Random gerarNumeroConta = new Random();
+
+        criarContaCorrente.setTipoConta(TipoConta.CORRENTE);
+
+        criarContaCorrente.setNumeroAgencia("0001");
+        System.out.println("AGENCIA: " + criarContaCorrente.getNumeroAgencia());
+
+        criarContaCorrente.setNumeroConta(String.valueOf(gerarNumeroConta.nextInt(9999) + 10000));
+        System.out.println("CONTA: " + criarContaCorrente.getNumeroConta());
+        criarContaCorrente.setDigitoConta("2");
+
+        double taxaManutencao = 0;
+
+        switch (novoCliente.getCategoria()) {
+            case SUPER:
+                taxaManutencao = 12.00;
+                break;
+            case COMUM:
+                taxaManutencao = 8.00;
+                break;
+            case PREMIUM:
+                taxaManutencao = 0;
+                break;
+            default:
+                System.err.println("Erro, cliente sem categoria!");
+                return;
+        }
+        System.out.println("TAXA DE RENDIMENTO MENSAL: " + taxaManutencao);
+
+        criarContaCorrente.setTaxaManutencao(taxaManutencao);
+        criarContaCorrente.setSaldoContaCorrente(0.00);
+        System.out.println("SALDO: " + criarContaCorrente.getSaldoContaCorrente());
+
+        novoCliente.abrirContaCorrente(criarContaCorrente);
     }
 
     private static void preencherDataNascimento(Scanner input, Cliente novoCliente) {
-        while(true) {
+        while (true) {
             System.out.println("Digite a Data de Nascimento (ex:dd/MM/yyyy)");
             String dtNasc = input.nextLine();
 
@@ -110,7 +224,7 @@ public class Main {
 
                 LocalDate now = LocalDate.now().minusYears(18);
 
-                if(parse.isAfter(now)){
+                if (parse.isAfter(now)) {
                     System.err.println("Data invalida, precisa ser maior de 18 anos");
                     continue;
                 }
@@ -126,7 +240,9 @@ public class Main {
     }
 
     private static void preencherSenha(Scanner input, Cliente novoCliente) {
-        while(true) {
+        while (true) {
+
+            //todo aplicar regex para senha ser somente numerica e com 4 digitos
             String senha1 = validarEntradaPreenchida(input,
                     "Digite a senha",
                     "Senha não preenchida");
@@ -135,7 +251,7 @@ public class Main {
                     "Digite novamente a Senha para confirmação",
                     "Senha não preenchida");
 
-            if(!senha1.equals(senha2))
+            if (!senha1.equals(senha2))
                 continue;
 
             novoCliente.setSenhaCliente(PasswordSecurity.encriptarSenha(senha1));
@@ -167,10 +283,12 @@ public class Main {
                 "Digite a Cidade",
                 "Cidade não preenchida"));
 
+        //todo aplicar regex no uf duas letras somente e maiusculas
         enderecoCliente.setEstado(validarEntradaPreenchida(input,
                 "Digite o Estado em UF (ex:SP)",
                 "UF não preenchido"));
 
+        //todo aplicar regex do cep
         enderecoCliente.setCep(validarEntradaPreenchida(input,
                 "Digite o CEP (ex:00000-000)",
                 "CEP não preenchido"));
@@ -180,21 +298,29 @@ public class Main {
 
     private static void escolherCategoria(Scanner input, Cliente novoCliente) {
         //TODO CATEGORIA
-        while(true) {
+        while (true) {
             System.out.println("\nEscolha a Categoria");
             System.out.println("(1) Comum");
-            System.out.println("(2) Super");
-            System.out.println("(3) Premium");
+            System.out.println("CONTA CORRENTE:Taxa de Manutenção Mensal: R$ 12,00 ");
+            System.out.println("CONTA POUPANÇA:Taxa de Rendimento Mensal: 0,5 %");
+
+            System.out.println("\n(2) Super");
+            System.out.println("CONTA CORRENTE:Taxa de Manutenção Mensal: R$ 8,00 ");
+            System.out.println("CONTA POUPANÇA:Taxa de Rendimento Mensal: 0,7 %");
+
+            System.out.println("\n(3) Premium");
+            System.out.println("CONTA CORRENTE:Taxa de Manutenção Mensal: ISENTO");
+            System.out.println("CONTA POUPANÇA:Taxa de Rendimento Mensal: 0,9 %");
             String escolhaCategoriaStr = input.nextLine();
 
-            if(!FuncoesUtil.ehNumero(escolhaCategoriaStr)){
+            if (!FuncoesUtil.ehNumero(escolhaCategoriaStr)) {
                 System.err.println("Digite somente numeros");
                 continue;
             }
 
             CategoriaEnum categoria;
 
-            switch(Integer.parseInt(escolhaCategoriaStr)){
+            switch (Integer.parseInt(escolhaCategoriaStr)) {
                 case 1:
                     categoria = CategoriaEnum.COMUM;
                     break;
@@ -215,12 +341,12 @@ public class Main {
     }
 
     private static String validarEntradaPreenchida(Scanner input,
-                                         String mensagemDeEntrada,
-                                         String mensagemDeErro) {
-        while(true) {
+                                                   String mensagemDeEntrada,
+                                                   String mensagemDeErro) {
+        while (true) {
             System.out.println(mensagemDeEntrada);
             String valor = input.nextLine();
-            if(valor.isBlank()) {
+            if (valor.isBlank()) {
                 System.err.println(mensagemDeErro);
                 continue;
             }
@@ -273,7 +399,7 @@ public class Main {
             System.out.println("(1) Enviar PIX");
             System.out.println("(2) Receber PIX");
             System.out.println("(3) Cancelar PIX");
-          //  System.out.println("(4) Deseja realizar nova transferência?");
+            //  System.out.println("(4) Deseja realizar nova transferência?");
             System.out.println("(9) Voltar para menu anterior");
             System.out.print("Escolha a opção desejada: ");
 
@@ -301,7 +427,7 @@ public class Main {
 //                    operacaoBancaria(input);
 //                    break;
                 case 9:
-                   // usuarioLogado(input);
+                    // usuarioLogado(input);
                     return;
                 default:
                     System.out.println("Opção inválida. Por favor, escolha uma opção válida.");
@@ -372,7 +498,7 @@ public class Main {
                     // endereço
                     break;
                 case 9:
-                 //   usuarioLogado(input);
+                    //   usuarioLogado(input);
                     return;
                 default:
                     System.out.println("Opção inválida. Por favor, escolha uma opção válida.");
@@ -406,7 +532,7 @@ public class Main {
                     //  Rendimentos anual
                     break;
                 case 9:
-                //    usuarioLogado(input);
+                    //    usuarioLogado(input);
                     return;
                 default:
                     System.out.println("Opção inválida. Por favor, escolha uma opção válida.");
@@ -552,8 +678,6 @@ public class Main {
 
         }
     }
-
-
 
 
     //TODO CRIAR LOGAR CLIENTE

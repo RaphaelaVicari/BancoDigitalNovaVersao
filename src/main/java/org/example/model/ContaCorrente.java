@@ -1,26 +1,25 @@
 package org.example.model;
 
-import java.text.DecimalFormat;
 
 public class ContaCorrente extends Conta {
 
-    private DecimalFormat saldoContaCorrente;
+    private Double saldoContaCorrente;
 
-    private DecimalFormat taxaManutencao;
+    private Double taxaManutencao;
 
-    public DecimalFormat getSaldoContaCorrente() {
+    public Double getSaldoContaCorrente() {
         return saldoContaCorrente;
     }
 
-    public void setSaldoContaCorrente(DecimalFormat saldoContaCorrente) {
+    public void setSaldoContaCorrente(Double saldoContaCorrente) {
         this.saldoContaCorrente = saldoContaCorrente;
     }
 
-    public DecimalFormat getTaxaManutencao() {
+    public Double getTaxaManutencao() {
         return taxaManutencao;
     }
 
-    public void setTaxaManutencao(DecimalFormat taxaManutencao) {
+    public void setTaxaManutencao(Double taxaManutencao) {
         this.taxaManutencao = taxaManutencao;
     }
 

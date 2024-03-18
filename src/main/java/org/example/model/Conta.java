@@ -18,8 +18,6 @@ public class Conta {
 
     private String digitoConta;
 
-    private String senhaConta;
-
     public Conta() {
         cartoes = new HashMap<>();
     }
@@ -64,22 +62,12 @@ public class Conta {
         this.digitoConta = digitoConta;
     }
 
-    public String getSenhaConta() {
-        return senhaConta;
-    }
-
-    public void setSenhaConta(String senhaConta) {
-        this.senhaConta = senhaConta;
-    }
-
-
     @Override
     public String toString() {
         return "Conta{" +
                 ", numeroConta='" + numeroConta + '\'' +
                 ", numeroAgencia='" + numeroAgencia + '\'' +
                 ", digitoConta='" + digitoConta + '\'' +
-                ", senhaConta='" + senhaConta + '\'' +
                 '}';
     }
 
