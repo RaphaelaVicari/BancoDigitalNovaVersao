@@ -35,7 +35,7 @@ public class Main {
                     cadastrarNovoCliente(input);
                     break;
                 case 2:
-                    usuarioLogado(input);
+                    usuarioLogado(input, null);
                     break;
                 case 3:
                     return;
@@ -45,13 +45,15 @@ public class Main {
         }
     }
 
-    public static void usuarioLogado(Scanner input) {
-
+    public static void usuarioLogado(Scanner input, Cliente cliente) {
+        //todo descomentar o nome do cliente e remover a linha logo acima dele
         while (true) {
             System.out.println("\n=== Usuario ===");
+//            System.out.println("\n=== " + cliente.getNomeCliente() + " ===");
             System.out.println("(1) Trasferência");
-            System.out.println("(2) Meu Perfil");
-            System.out.println("(3) Meu Cartão");
+            System.out.println("(2) Perfil");
+            System.out.println("(3) Cartão");
+            System.out.println("(4) Conta");
             System.out.println("(9) Sair");
             System.out.print("Escolha a opção desejada: ");
 
@@ -72,12 +74,21 @@ public class Main {
                 case 3:
                     menuCartao(input);
                     break;
+                case 4:
+                    menuContas(input);
+                    break;
                 case 9:
                     return;
                 default:
                     System.out.println("Opção inválida. Por favor, escolha uma opção válida.");
             }
         }
+    }
+
+    private static void menuContas(Scanner input) {
+        //todo implementar menu de acesso para cada tipo de conta
+        //todo conta corrente mostrar a opção de saldo e o custo atual da taxa de manutenção
+        //todo conta poupança mostrar a opção de saldo e o rendimento atual da conta
     }
 
     private static void cadastrarNovoCliente(Scanner input) {
@@ -88,7 +99,7 @@ public class Main {
                 "Digite o CPF (ex:000.000.000-00)",
                 "CPF não preenchido"));
 
-        //todo aplicar regex no nome do cliente, deve ter mais de duas letras e nao pode conter numero
+        //todo aplicar regex no nome do cliente, deve ter mais de duas letras e no maximo 100 letrase nao pode conter numero
         novoCliente.setNomeCliente(validarEntradaPreenchida(input,
                 "Digite o Nome Completo",
                 "Nome não preenchido"));
@@ -395,11 +406,10 @@ public class Main {
     public static void menuPIX(Scanner input) {
 
         while (true) {
+            //todo a chave do pix sempre vai ser o cpf do cliente
             System.out.println("\n=== PIX ===");
             System.out.println("(1) Enviar PIX");
             System.out.println("(2) Receber PIX");
-            System.out.println("(3) Cancelar PIX");
-            //  System.out.println("(4) Deseja realizar nova transferência?");
             System.out.println("(9) Voltar para menu anterior");
             System.out.print("Escolha a opção desejada: ");
 
@@ -419,13 +429,6 @@ public class Main {
                     System.out.println("== Receber PIX ==");
                     //  receber PIX
                     break;
-                case 3:
-                    System.out.println("== Cancelar PIX ==");
-                    //  cancelar PIX
-                    break;
-//                case 4:
-//                    operacaoBancaria(input);
-//                    break;
                 case 9:
                     // usuarioLogado(input);
                     return;
@@ -440,7 +443,7 @@ public class Main {
         while (true) {
             System.out.println("\n=== MEU PERFIL ===");
             System.out.println("(1) Atualização Cadastral ");
-            System.out.println("(2) Cestas de Serviços");
+            System.out.println("(2) Alterar Categoria");
             System.out.println("(9) Voltar para o menu anterior");
             System.out.print("Escolha a opção desejada: ");
 
@@ -456,7 +459,7 @@ public class Main {
                     alterarDados(input);
                     break;
                 case 2:
-                    cestaServicos(input);
+                    alterarCategoriaConta(input);
                     break;
                 case 9:
                     System.out.println("Voltando ao Menu.");
@@ -467,13 +470,18 @@ public class Main {
         }
     }
 
+    private static void alterarCategoriaConta(Scanner input) {
+        //todo implementar troca de categoria do cliente e troca das taxas de rendimentos e manutenção
+    }
+
     public static void alterarDados(Scanner input) {
 
         while (true) {
             System.out.println("\n== Perfil ==");
             System.out.println("(1) Nome de preferência");
             System.out.println("(2) Data de nascimento");
-            System.out.println("(3) Endereço");
+            System.out.println("(3) Senha");
+            System.out.println("(4) Endereço");
             System.out.println("(9) Voltar para o menu anterior");
             System.out.print("Escolha a opção desejada: ");
 
@@ -494,45 +502,14 @@ public class Main {
                     //  data nascimento
                     break;
                 case 3:
+                    //todo alterar senha
+                    break;
+                case 4:
                     System.out.println("Endereço.");
                     // endereço
                     break;
                 case 9:
                     //   usuarioLogado(input);
-                    return;
-                default:
-                    System.out.println("Opção inválida. Por favor, escolha uma opção válida.");
-            }
-        }
-    }
-
-    public static void cestaServicos(Scanner input) {
-
-        while (true) {
-            System.out.println("\n== Taxas serviços, redimentos anual ==");
-            System.out.println("(1) Taxas serviços");
-            System.out.println("(2) Rendimentos anual");
-            System.out.println("(9) Voltar para o menu anterior");
-            System.out.print("Escolha a opção desejada: ");
-
-            String ServicosCesta = input.nextLine();
-            if (!FuncoesUtil.ehNumero(ServicosCesta)) {
-                System.err.println("Opção inválida, utilize somente os número mostrados no Menu!");
-                continue;
-            }
-            int servicos = Integer.parseInt(ServicosCesta);
-
-            switch (servicos) {
-                case 1:
-                    System.out.println("== Taxas serviços ==");
-                    //  taxas serviços
-                    break;
-                case 2:
-                    System.out.println("== Rendimentos anual ==");
-                    //  Rendimentos anual
-                    break;
-                case 9:
-                    //    usuarioLogado(input);
                     return;
                 default:
                     System.out.println("Opção inválida. Por favor, escolha uma opção válida.");
@@ -582,6 +559,8 @@ public class Main {
             System.out.println("(3) Cancelar Cartão");
             System.out.println("(9) Voltar Para o Menu Anterior");
 
+            //todo listar todos os cartoes de debito
+
             String escolherDebitoMenu = input.nextLine();
             if (!FuncoesUtil.ehNumero(escolherDebitoMenu)) {
                 System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
@@ -609,12 +588,16 @@ public class Main {
 
     public static void menuCartaoCredito(Scanner input) {
         while (true) {
+            //todo para todas as operções exceto adquirir cartao, deve ser identificado
+            // o cartao que o usuario deseja fazer as operações
             System.out.println("\n== Cartão de Crédito ==");
             System.out.println("(1) Adquirir Cartão");
             System.out.println("(2) Alterar Limite");
             System.out.println("(3) Seguro Cartão");
             System.out.println("(4) Cancelar Cartão");
             System.out.println("(9) Voltar Para o Menu Anterior");
+
+            //todo listar todos os cartoes de credito
 
             String escolherCreditoMenu = input.nextLine();
             if (!FuncoesUtil.ehNumero(escolherCreditoMenu)) {
