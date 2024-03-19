@@ -21,9 +21,19 @@ public class Cartao {
 
     private LocalDateTime dataVencimento;
 
+    private CartaoStatus status;
+
     public Cartao() {
         this.seguros = new ArrayList<>();
         this.pagamentos = new ArrayList<>();
+    }
+
+    public CartaoStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(CartaoStatus status) {
+        this.status = status;
     }
 
     public TipoCartao getTipoCartao() {

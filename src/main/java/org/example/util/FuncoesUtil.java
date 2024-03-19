@@ -24,4 +24,6 @@ public class FuncoesUtil {
         return NUMBER_PATTERN.matcher(entrada).matches();
     }
 
+    //todo criar as funções staticas de validacao de regex aqui nessa classe, vulgo exemplo acima {Willians}
+
 }

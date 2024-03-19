@@ -1,7 +1,12 @@
 package org.example;
 
 import org.example.model.*;
+import org.example.repository.ClienteRepository;
 import org.example.security.PasswordSecurity;
+import org.example.service.CartaoService;
+import org.example.service.ClienteService;
+import org.example.service.ContaService;
+import org.example.service.TransferenciaService;
 import org.example.util.FuncoesUtil;
 
 import java.time.LocalDate;
@@ -12,8 +17,15 @@ import java.util.Scanner;
 
 public class Main {
 
+    static ClienteRepository clienteRepository = new ClienteRepository();
+    static ClienteService clienteService = new ClienteService(clienteRepository);
+    static TransferenciaService transferenciaService = new TransferenciaService(clienteRepository);
+    static ContaService contaService = new ContaService();
+    static CartaoService cartaoService = new CartaoService();
+
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
+
 
         aberturaBanco();
 
@@ -35,7 +47,7 @@ public class Main {
                     cadastrarNovoCliente(input);
                     break;
                 case 2:
-                    usuarioLogado(input, null);
+                    fazerLogin(input);
                     break;
                 case 3:
                     return;
@@ -45,8 +57,13 @@ public class Main {
         }
     }
 
+    private static void fazerLogin(Scanner input) {
+        //todo fazer o login do cliente {Raphaela}
+        usuarioLogado(input, null);
+    }
+
     public static void usuarioLogado(Scanner input, Cliente cliente) {
-        //todo descomentar o nome do cliente e remover a linha logo acima dele
+        //todo descomentar o nome do cliente e remover a linha logo acima dele {Raphaela}
         while (true) {
             System.out.println("\n=== Usuario ===");
 //            System.out.println("\n=== " + cliente.getNomeCliente() + " ===");
@@ -66,16 +83,16 @@ public class Main {
 
             switch (Usuario) {
                 case 1:
-                    operacaoBancaria(input);
+                    operacaoBancaria(input, cliente);
                     break;
                 case 2:
-                    meuPerfil(input);
+                    meuPerfil(input, cliente);
                     break;
                 case 3:
-                    menuCartao(input);
+                    menuCartao(input, cliente);
                     break;
                 case 4:
-                    menuContas(input);
+                    menuContas(input, cliente);
                     break;
                 case 9:
                     return;
@@ -85,21 +102,21 @@ public class Main {
         }
     }
 
-    private static void menuContas(Scanner input) {
+    private static void menuContas(Scanner input, Cliente cliente) {
         //todo implementar menu de acesso para cada tipo de conta
-        //todo conta corrente mostrar a opção de saldo e o custo atual da taxa de manutenção
-        //todo conta poupança mostrar a opção de saldo e o rendimento atual da conta
+        // conta corrente mostrar a opção de saldo e o custo atual da taxa de manutenção
+        // conta poupança mostrar a opção de saldo e o rendimento atual da conta {Patrick}
     }
 
     private static void cadastrarNovoCliente(Scanner input) {
         Cliente novoCliente = new Cliente();
 
-        //todo aplicar regex no cpf, deve conter pontuação
+        //todo aplicar regex no cpf, deve conter pontuação {Willians}
         novoCliente.setCpfCliente(validarEntradaPreenchida(input,
                 "Digite o CPF (ex:000.000.000-00)",
                 "CPF não preenchido"));
 
-        //todo aplicar regex no nome do cliente, deve ter mais de duas letras e no maximo 100 letrase nao pode conter numero
+        //todo aplicar regex no nome do cliente, deve ter mais de duas letras e no maximo 100 letrase nao pode conter numero {Willians}
         novoCliente.setNomeCliente(validarEntradaPreenchida(input,
                 "Digite o Nome Completo",
                 "Nome não preenchido"));
@@ -253,7 +270,7 @@ public class Main {
     private static void preencherSenha(Scanner input, Cliente novoCliente) {
         while (true) {
 
-            //todo aplicar regex para senha ser somente numerica e com 4 digitos
+            //todo aplicar regex para senha ser somente numerica e com 4 digitos {Willians}
             String senha1 = validarEntradaPreenchida(input,
                     "Digite a senha",
                     "Senha não preenchida");
@@ -294,12 +311,12 @@ public class Main {
                 "Digite a Cidade",
                 "Cidade não preenchida"));
 
-        //todo aplicar regex no uf duas letras somente e maiusculas
+        //todo aplicar regex no uf duas letras somente e maiusculas {Willians}
         enderecoCliente.setEstado(validarEntradaPreenchida(input,
                 "Digite o Estado em UF (ex:SP)",
                 "UF não preenchido"));
 
-        //todo aplicar regex do cep
+        //todo aplicar regex do cep {Willians}
         enderecoCliente.setCep(validarEntradaPreenchida(input,
                 "Digite o CEP (ex:00000-000)",
                 "CEP não preenchido"));
@@ -308,7 +325,6 @@ public class Main {
     }
 
     private static void escolherCategoria(Scanner input, Cliente novoCliente) {
-        //TODO CATEGORIA
         while (true) {
             System.out.println("\nEscolha a Categoria");
             System.out.println("(1) Comum");
@@ -365,8 +381,8 @@ public class Main {
         }
     }
 
-    public static void operacaoBancaria(Scanner input) {
-
+    public static void operacaoBancaria(Scanner input, Cliente cliente) {
+        //todo implementar transferencias {Raphaela}
         while (true) {
             System.out.println("\n=== TRANSFERÊNCIAS ===");
             System.out.println("(1) Transferência entre contas starbank");
@@ -406,7 +422,7 @@ public class Main {
     public static void menuPIX(Scanner input) {
 
         while (true) {
-            //todo a chave do pix sempre vai ser o cpf do cliente
+            //todo a chave do pix sempre vai ser o cpf do cliente {Raphaela}
             System.out.println("\n=== PIX ===");
             System.out.println("(1) Enviar PIX");
             System.out.println("(2) Receber PIX");
@@ -438,8 +454,7 @@ public class Main {
         }
     }
 
-    public static void meuPerfil(Scanner input) {
-
+    public static void meuPerfil(Scanner input, Cliente cliente) {
         while (true) {
             System.out.println("\n=== MEU PERFIL ===");
             System.out.println("(1) Atualização Cadastral ");
@@ -456,10 +471,10 @@ public class Main {
 
             switch (perfil) {
                 case 1:
-                    alterarDados(input);
+                    alterarDados(input, cliente);
                     break;
                 case 2:
-                    alterarCategoriaConta(input);
+                    alterarCategoriaConta(input, cliente);
                     break;
                 case 9:
                     System.out.println("Voltando ao Menu.");
@@ -470,11 +485,12 @@ public class Main {
         }
     }
 
-    private static void alterarCategoriaConta(Scanner input) {
-        //todo implementar troca de categoria do cliente e troca das taxas de rendimentos e manutenção
+    private static void alterarCategoriaConta(Scanner input, Cliente cliente) {
+        //todo implementar troca de categoria do cliente e troca das taxas de rendimentos e manutenção {Raphaela}
+        escolherCategoria(input, cliente);
     }
 
-    public static void alterarDados(Scanner input) {
+    public static void alterarDados(Scanner input, Cliente cliente) {
 
         while (true) {
             System.out.println("\n== Perfil ==");
@@ -492,6 +508,8 @@ public class Main {
             }
             int alterar = Integer.parseInt(AlterarUsuario);
 
+            //TODO implementar alteracao dos dados cadastrais do cliente {Willians}
+
             switch (alterar) {
                 case 1:
                     System.out.println("== Nome ==");
@@ -502,7 +520,7 @@ public class Main {
                     //  data nascimento
                     break;
                 case 3:
-                    //todo alterar senha
+                    //todo alterar senha {Patrick}
                     break;
                 case 4:
                     System.out.println("Endereço.");
@@ -518,7 +536,7 @@ public class Main {
     }
 
     //menu para controle de cartao
-    public static void menuCartao(Scanner input) {
+    public static void menuCartao(Scanner input, Cliente cliente) {
         while (true) {
 
             System.out.println("\n== Meu Cartão ==");
@@ -559,7 +577,8 @@ public class Main {
             System.out.println("(3) Cancelar Cartão");
             System.out.println("(9) Voltar Para o Menu Anterior");
 
-            //todo listar todos os cartoes de debito
+            //todo listar todos os cartoes de debito(deve se listar todos os cartoes com seus status(ATIVADO, DESATIVADO))
+            // criar funcionalidades de adquirir, alterar limite e cancelar cartão(no cancelar cartao, deve ser alterar o status para cancelado na enum dele) {Patrick}
 
             String escolherDebitoMenu = input.nextLine();
             if (!FuncoesUtil.ehNumero(escolherDebitoMenu)) {
@@ -589,7 +608,7 @@ public class Main {
     public static void menuCartaoCredito(Scanner input) {
         while (true) {
             //todo para todas as operções exceto adquirir cartao, deve ser identificado
-            // o cartao que o usuario deseja fazer as operações
+            // o cartao que o usuario deseja fazer as operações {Patrick}
             System.out.println("\n== Cartão de Crédito ==");
             System.out.println("(1) Adquirir Cartão");
             System.out.println("(2) Alterar Limite");
@@ -597,7 +616,7 @@ public class Main {
             System.out.println("(4) Cancelar Cartão");
             System.out.println("(9) Voltar Para o Menu Anterior");
 
-            //todo listar todos os cartoes de credito
+            //todo listar todos os cartoes de credito {Patrick}
 
             String escolherCreditoMenu = input.nextLine();
             if (!FuncoesUtil.ehNumero(escolherCreditoMenu)) {
@@ -662,8 +681,6 @@ public class Main {
         }
     }
 
-
-    //TODO CRIAR LOGAR CLIENTE
     public static void aberturaBanco() {
         System.out.println("   d888888o.   8888888 8888888888         .8.          8 888888888o.  ");
         System.out.println(" .`8888:' `88.       8 8888              .888.         8 8888    `88. ");

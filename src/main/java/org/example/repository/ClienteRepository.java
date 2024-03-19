@@ -13,7 +13,6 @@ public class ClienteRepository {
 
     private static final String CLIENTES_JSON = "./clientes.json";
     private Map<Long, Cliente> clienteList;
-
     private RepositoryUtil utilidades;
 
     private ObjectMapper mapeador;

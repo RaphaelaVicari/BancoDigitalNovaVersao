@@ -14,7 +14,7 @@ public class ClienteService {
     private ClienteRepository clienteRepository;
     private PasswordSecurity passwordSecurity;
 
-    public ClienteService() {
+    public ClienteService(ClienteRepository clienteRepository) {
         this.clienteRepository = new ClienteRepository();
         this.passwordSecurity = new PasswordSecurity();
     }
