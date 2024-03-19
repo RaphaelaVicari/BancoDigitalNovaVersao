@@ -1,9 +1,13 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Cliente {
     private String cpfCliente;
 
@@ -13,12 +17,10 @@ public class Cliente {
 
     private String senhaCliente;
 
-    private Double saldo;
-
     private CategoriaEnum categoria;
 
     private Endereco endereco;
-
+//todo remover map tipo conta e criar duas instancias uma para cada tipo de conta
     private Map<TipoConta, Conta> contas;
 
     public Cliente() {
@@ -26,10 +28,12 @@ public class Cliente {
         this.endereco = new Endereco();
     }
 
+    @JsonIgnore
     public Conta getContaCorrente() {
         return contas.get(TipoConta.CORRENTE);
     }
 
+    @JsonIgnore
     public Conta getContaPoupanca() {
         return contas.get(TipoConta.POUPANCA);
     }
@@ -72,14 +76,6 @@ public class Cliente {
         this.categoria = categoria;
     }
 
-    public double getSaldo() {
-        return saldo;
-    }
-
-    public void setSaldo(double saldo) {
-        this.saldo = saldo;
-    }
-
     public String getCpfCliente() {
         return cpfCliente;
     }
@@ -112,4 +108,7 @@ public class Cliente {
         this.senhaCliente = senhaCliente;
     }
 
+    public Map<TipoConta, Conta> getContas() {
+        return contas;
+    }
 }

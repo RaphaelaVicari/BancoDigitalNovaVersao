@@ -12,6 +12,7 @@ import org.example.util.FuncoesUtil;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -25,7 +26,6 @@ public class Main {
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
-
 
         aberturaBanco();
 
@@ -76,7 +76,15 @@ public class Main {
 
     public static void usuarioLogado(Scanner input, Cliente cliente) {
         while (true) {
-            System.out.println("\n=== " + cliente.getNomeCliente() + " ===");
+            System.out.println("\n=== " + cliente.getNomeCliente() + " ===\n");
+
+            for(Map.Entry<TipoConta, Conta> i: cliente.getContas().entrySet()){
+                Conta conta = i.getValue();
+                System.out.println(conta.getTipoConta());
+                System.out.println("AGENCIA: " + conta.getNumeroAgencia());
+                System.out.println("CONTA: " + conta.getNumeroConta() + " DIGITO: " + conta.getDigitoConta());
+                System.out.println("\n SALDO: " + conta.getSaldo());
+            }
             System.out.println("(1) Trasferência");
             System.out.println("(2) Perfil");
             System.out.println("(3) Cartão");
@@ -134,9 +142,16 @@ public class Main {
         preencherDataNascimento(input, novoCliente);
         preencherEndereco(input, novoCliente);
         preencherSenha(input, novoCliente);
-        criarConta(input, novoCliente);
         escolherCategoria(input, novoCliente);
+        criarConta(input, novoCliente);
 
+        if(clienteService.clienteNovo(novoCliente) == null){
+            System.err.println("Erro! Cadastro não realizado");
+            return;
+        }
+
+        System.out.println("Cadastro realizado com sucesso!");
+        System.out.println("Utilize o CPF e senha definida no cadastro para logar na conta");
     }
 
     private static void criarConta(Scanner input, Cliente novoCliente) {
@@ -204,8 +219,8 @@ public class Main {
         System.out.println("RENDIMENTO MENSAL: " + taxaMensal * 100 + "%");
 
         criarContaPoupanca.setTaxaRendimento(taxaMensal);
-        criarContaPoupanca.setSaldoContaPoupanca(0.00);
-        System.out.println("SALDO: " + criarContaPoupanca.getSaldoContaPoupanca());
+        criarContaPoupanca.setSaldo(0.00);
+        System.out.println("SALDO: " + criarContaPoupanca.getSaldo());
 
         novoCliente.abrirContaPoupanca(criarContaPoupanca);
     }
@@ -244,14 +259,15 @@ public class Main {
         System.out.println("TAXA DE RENDIMENTO MENSAL: " + taxaManutencao);
 
         criarContaCorrente.setTaxaManutencao(taxaManutencao);
-        criarContaCorrente.setSaldoContaCorrente(0.00);
-        System.out.println("SALDO: " + criarContaCorrente.getSaldoContaCorrente());
+        criarContaCorrente.setSaldo(0.00);
+        System.out.println("SALDO: " + criarContaCorrente.getSaldo());
 
         novoCliente.abrirContaCorrente(criarContaCorrente);
     }
 
     private static void preencherDataNascimento(Scanner input, Cliente novoCliente) {
         while (true) {
+            //TODO COLOCAR IDADE LIMITE (100 ANOS) PARA REALIZAR CADASTRO CONTA {Willians}
             System.out.println("Digite a Data de Nascimento (ex:dd/MM/yyyy)");
             String dtNasc = input.nextLine();
 

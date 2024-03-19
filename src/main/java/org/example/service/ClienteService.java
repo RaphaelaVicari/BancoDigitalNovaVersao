@@ -26,7 +26,7 @@ public class ClienteService {
         if(clienteCadastrado == null){
             return null;
         }
-
+        //todo validar metodo de login porque senha nao esta batendo
         if(!PasswordSecurity.checkSenha(loginSenha, clienteCadastrado.getSenhaCliente())){
             return null;
         }
@@ -260,18 +260,6 @@ public class ClienteService {
         return matcher.matches();
     }
 
-    public void atualizarClienteSaldo(Cliente cliente, double saldo)
-    {
-        Cliente c = consultarClientePorCpf(cliente.getCpfCliente());
-
-        if (c == null) {
-            System.err.println("Cliente inexistente para atualização de saldo");
-            return;
-        }
-
-        c.setSaldo(saldo);
-        clienteRepository.atualizarBaseDados();
-    }
 }
 
 

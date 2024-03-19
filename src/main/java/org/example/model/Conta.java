@@ -1,9 +1,13 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Conta {
 
     private TipoConta tipoConta;
@@ -14,12 +18,15 @@ public class Conta {
 
     private String numeroConta;
 
+    private Double saldo;
+
     private String numeroAgencia;
 
     private String digitoConta;
 
     public Conta() {
         cartoes = new HashMap<>();
+        transferencias = new ArrayList<>();
     }
 
     public TipoConta getTipoConta() {
@@ -60,6 +67,14 @@ public class Conta {
 
     public void setDigitoConta(String digitoConta) {
         this.digitoConta = digitoConta;
+    }
+
+    public Double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(Double saldo) {
+        this.saldo = saldo;
     }
 
     @Override
