@@ -12,7 +12,7 @@ import java.util.Map;
 public class ClienteRepository {
 
     private static final String CLIENTES_JSON = "./clientes.json";
-    private Map<Long, Cliente> clienteList;
+    private Map<String, Cliente> clienteMap;
     private RepositoryUtil utilidades;
 
     private ObjectMapper mapeador;
@@ -24,10 +24,10 @@ public class ClienteRepository {
 
         try {
             byte[] dados = utilidades.lerArquivo(CLIENTES_JSON);
-            clienteList = mapeador.readValue(dados, new TypeReference<>() {
+            clienteMap = mapeador.readValue(dados, new TypeReference<>() {
             });
         } catch (IOException e) {
-            clienteList = new HashMap<>();
+            clienteMap = new HashMap<>();
         }
     }
 
@@ -35,8 +35,8 @@ public class ClienteRepository {
 
 
         try {
-            clienteList.put((long) Math.random(), registroNovoCliente);
-            String saida = mapeador.writerWithDefaultPrettyPrinter().writeValueAsString(clienteList);
+            clienteMap.put(registroNovoCliente.getCpfCliente(), registroNovoCliente);
+            String saida = mapeador.writerWithDefaultPrettyPrinter().writeValueAsString(clienteMap);
             utilidades.persistirArquivo(CLIENTES_JSON, saida);
 
         } catch (IOException e) {
@@ -49,17 +49,11 @@ public class ClienteRepository {
 
     public Cliente consultarClientePorCpf(String cpfCliente) {
 
-        for (Map.Entry<Long, Cliente> d : clienteList.entrySet()) {
-            var dados = d.getValue();
-            if (dados.getCpfCliente().equalsIgnoreCase(cpfCliente)) {
-                return dados;
-            }
-        }
-        return null;
+        return clienteMap.get(cpfCliente);
     }
     public boolean atualizarBaseDados() {
         try {
-            String saida = mapeador.writerWithDefaultPrettyPrinter().writeValueAsString(clienteList);
+            String saida = mapeador.writerWithDefaultPrettyPrinter().writeValueAsString(clienteMap);
             utilidades.persistirArquivo(CLIENTES_JSON, saida);
         } catch (IOException e) {
             e.printStackTrace();

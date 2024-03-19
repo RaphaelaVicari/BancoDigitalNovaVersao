@@ -12,11 +12,26 @@ import java.util.regex.Pattern;
 public class ClienteService {
 
     private ClienteRepository clienteRepository;
-    private PasswordSecurity passwordSecurity;
 
     public ClienteService(ClienteRepository clienteRepository) {
-        this.clienteRepository = new ClienteRepository();
-        this.passwordSecurity = new PasswordSecurity();
+        this.clienteRepository = clienteRepository;
+    }
+
+    public Cliente logarCliente(String loginCpf, String loginSenha) {
+
+        Cliente clienteCadastrado;
+
+        clienteCadastrado = clienteRepository.consultarClientePorCpf(loginCpf);
+
+        if(clienteCadastrado == null){
+            return null;
+        }
+
+        if(!PasswordSecurity.checkSenha(loginSenha, clienteCadastrado.getSenhaCliente())){
+            return null;
+        }
+
+        return clienteCadastrado;
     }
 
     public static class CPF {
@@ -129,7 +144,7 @@ public class ClienteService {
             return null;
         }
         
-        cliente.setSenhaCliente(passwordSecurity.encriptarSenha(cliente.getSenhaCliente()));
+        cliente.setSenhaCliente(PasswordSecurity.encriptarSenha(cliente.getSenhaCliente()));
         return clienteRepository.cadastrarCliente(cliente);
 
     }
@@ -189,7 +204,7 @@ public class ClienteService {
 
     public boolean checkSenha(Cliente cliente, String senha) {
 
-        return passwordSecurity.checkSenha(senha, cliente.getSenhaCliente());
+        return PasswordSecurity.checkSenha(senha, cliente.getSenhaCliente());
 
     }
 

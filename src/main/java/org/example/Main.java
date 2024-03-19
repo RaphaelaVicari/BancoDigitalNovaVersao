@@ -58,15 +58,25 @@ public class Main {
     }
 
     private static void fazerLogin(Scanner input) {
-        //todo fazer o login do cliente {Raphaela}
-        usuarioLogado(input, null);
+
+        System.out.println("--- LOGIN ---\n");
+        System.out.println("Digite o CPF");
+        String loginCpf = input.nextLine();
+
+        System.out.println("Digite a Senha");
+        String loginSenha = input.nextLine();
+        Cliente cliente = clienteService.logarCliente(loginCpf, loginSenha);
+
+        if (cliente == null) {
+            System.err.println("Erro! Senha ou CPF está inválido!");
+            return;
+        }
+        usuarioLogado(input, cliente);
     }
 
     public static void usuarioLogado(Scanner input, Cliente cliente) {
-        //todo descomentar o nome do cliente e remover a linha logo acima dele {Raphaela}
         while (true) {
-            System.out.println("\n=== Usuario ===");
-//            System.out.println("\n=== " + cliente.getNomeCliente() + " ===");
+            System.out.println("\n=== " + cliente.getNomeCliente() + " ===");
             System.out.println("(1) Trasferência");
             System.out.println("(2) Perfil");
             System.out.println("(3) Cartão");
