@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Conta {
 
     private TipoConta tipoConta;

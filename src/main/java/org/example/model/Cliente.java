@@ -2,12 +2,12 @@ package org.example.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
 public class Cliente {
     private String cpfCliente;
 
@@ -20,44 +20,29 @@ public class Cliente {
     private CategoriaEnum categoria;
 
     private Endereco endereco;
-//todo remover map tipo conta e criar duas instancias uma para cada tipo de conta
-    private Map<TipoConta, Conta> contas;
+
+    private ContaCorrente contaCorrente;
+
+    private ContaPoupanca contaPoupanca;
 
     public Cliente() {
-        this.contas = new HashMap<>();
         this.endereco = new Endereco();
     }
 
-    @JsonIgnore
-    public Conta getContaCorrente() {
-        return contas.get(TipoConta.CORRENTE);
+    public ContaCorrente getContaCorrente() {
+        return contaCorrente;
     }
 
-    @JsonIgnore
-    public Conta getContaPoupanca() {
-        return contas.get(TipoConta.POUPANCA);
+    public ContaPoupanca getContaPoupanca() {
+        return contaPoupanca;
     }
 
-    public void abrirContaPoupanca(Conta conta) {
-        if (contas.containsKey(TipoConta.POUPANCA)) {
-            System.err.println("Erro, este cliente ja possui conta poupança!");
-            return;
-        }
-
-        abrirConta(conta, TipoConta.POUPANCA);
+    public void setContaPoupanca(ContaPoupanca conta) {
+        this.contaPoupanca = conta;
     }
 
-    public void abrirContaCorrente(Conta conta) {
-        if (contas.containsKey(TipoConta.CORRENTE)) {
-            System.err.println("Erro, este cliente já possui conta corrente!");
-            return;
-        }
-
-        abrirConta(conta, TipoConta.CORRENTE);
-    }
-
-    private void abrirConta(Conta conta, TipoConta tipoConta) {
-        contas.put(tipoConta, conta);
+    public void setContaCorrente(ContaCorrente conta) {
+        this.contaCorrente = conta;
     }
 
     public Endereco getEndereco() {
@@ -108,7 +93,4 @@ public class Cliente {
         this.senhaCliente = senhaCliente;
     }
 
-    public Map<TipoConta, Conta> getContas() {
-        return contas;
-    }
 }

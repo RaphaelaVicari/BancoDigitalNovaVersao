@@ -78,13 +78,9 @@ public class Main {
         while (true) {
             System.out.println("\n=== " + cliente.getNomeCliente() + " ===\n");
 
-            for(Map.Entry<TipoConta, Conta> i: cliente.getContas().entrySet()){
-                Conta conta = i.getValue();
-                System.out.println(conta.getTipoConta());
-                System.out.println("AGENCIA: " + conta.getNumeroAgencia());
-                System.out.println("CONTA: " + conta.getNumeroConta() + " DIGITO: " + conta.getDigitoConta());
-                System.out.println("\n SALDO: " + conta.getSaldo());
-            }
+            mostrarDadosConta(cliente.getContaCorrente());
+            mostrarDadosConta(cliente.getContaPoupanca());
+
             System.out.println("(1) Trasferência");
             System.out.println("(2) Perfil");
             System.out.println("(3) Cartão");
@@ -118,6 +114,14 @@ public class Main {
                     System.out.println("Opção inválida. Por favor, escolha uma opção válida.");
             }
         }
+    }
+
+    private static void mostrarDadosConta(Conta conta) {
+        System.out.println(conta.getTipoConta());
+        System.out.println("AGENCIA: " + conta.getNumeroAgencia());
+        System.out.println("CONTA: " + conta.getNumeroConta() + " DIGITO: " + conta.getDigitoConta());
+        System.out.println("SALDO: " + conta.getSaldo());
+        System.out.println();
     }
 
     private static void menuContas(Scanner input, Cliente cliente) {
@@ -216,13 +220,13 @@ public class Main {
                 System.err.println("Erro, cliente sem categoria!");
                 return;
         }
-        System.out.println("RENDIMENTO MENSAL: " + taxaMensal * 100 + "%");
+        System.out.println("RENDIMENTO MENSAL: " + String.format("%.2f", taxaMensal * 100) + "%");
 
         criarContaPoupanca.setTaxaRendimento(taxaMensal);
         criarContaPoupanca.setSaldo(0.00);
         System.out.println("SALDO: " + criarContaPoupanca.getSaldo());
 
-        novoCliente.abrirContaPoupanca(criarContaPoupanca);
+        novoCliente.setContaPoupanca(criarContaPoupanca);
     }
 
 
@@ -256,13 +260,13 @@ public class Main {
                 System.err.println("Erro, cliente sem categoria!");
                 return;
         }
-        System.out.println("TAXA DE RENDIMENTO MENSAL: " + taxaManutencao);
+        System.out.println("TAXA DE RENDIMENTO MENSAL: " + String.format("%.2f", taxaManutencao));
 
         criarContaCorrente.setTaxaManutencao(taxaManutencao);
         criarContaCorrente.setSaldo(0.00);
         System.out.println("SALDO: " + criarContaCorrente.getSaldo());
 
-        novoCliente.abrirContaCorrente(criarContaCorrente);
+        novoCliente.setContaCorrente(criarContaCorrente);
     }
 
     private static void preencherDataNascimento(Scanner input, Cliente novoCliente) {
@@ -308,7 +312,7 @@ public class Main {
             if (!senha1.equals(senha2))
                 continue;
 
-            novoCliente.setSenhaCliente(PasswordSecurity.encriptarSenha(senha1));
+            novoCliente.setSenhaCliente(senha1);
             break;
         }
     }
