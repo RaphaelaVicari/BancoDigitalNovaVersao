@@ -423,7 +423,7 @@ public class Main {
                 LocalDate now = LocalDate.now().minusYears(18);
 
                 if (parse.isAfter(now)) {
-                    System.err.println("Data invalida, precisa ser maior de 18 anos");
+                    System.err.println("Erro, precisa ser maior de 18 anos");
                     continue;
                 }
 
@@ -442,9 +442,8 @@ public class Main {
             String senha1;
             do {
                 senha1 = validarEntradaPreenchida(input,
-                        "Digite uma senha",
-                        "Senha não preenchido");
-
+                        "Crie uma senha com 4 números (ex:0000)",
+                        "Senha não preenchida");
                 if (!FuncoesUtil.validarSenha(senha1)) {
                     System.err.println("Senha invalida! Crie uma senha de 4 digitos.");
                    continue;
@@ -499,8 +498,7 @@ public class Main {
                     "Digite o Estado em UF (ex:SP)",
                     "UF não preenchido");
             if (!FuncoesUtil.validarUF(uf)) {
-                System.err.println("UF inválido! UF deve conter somente letras, com no mínimo 2 letras.");
-                continue;
+                System.err.println("UF inválido! UF deve conter somente letras maiuscuslas, com no máximo 2 letras (ex:SP)");
             }
             enderecoCliente.setEstado(uf);
             break;
@@ -511,8 +509,7 @@ public class Main {
                     "Digite o CEP (ex:00000-000)",
                     "CEP não preenchido");
             if (!FuncoesUtil.validarCEP(cep)) {
-                System.err.println("CEP inválido! CEP deve conter somente números.");
-                continue;
+                System.err.println("CEP inválido! CEP deve contar a pontuação (ex:00000-000).");
             }
             enderecoCliente.setCep(cep);
             break;
@@ -528,12 +525,12 @@ public class Main {
             System.out.println("CONTA POUPANÇA:Taxa de Rendimento Mensal: 0,5 %");
 
             System.out.println("\n(2) Super");
-            System.out.println("CONTA CORRENTE:Taxa de Manutenção Mensal: R$ 8,00 ");
-            System.out.println("CONTA POUPANÇA:Taxa de Rendimento Mensal: 0,7 %");
+            System.out.println("CONTA CORRENTE: Taxa de Manutenção Mensal: R$ 8,00 ");
+            System.out.println("CONTA POUPANÇA: Taxa de Rendimento Mensal: 0,7 %");
 
             System.out.println("\n(3) Premium");
-            System.out.println("CONTA CORRENTE:Taxa de Manutenção Mensal: ISENTO");
-            System.out.println("CONTA POUPANÇA:Taxa de Rendimento Mensal: 0,9 %");
+            System.out.println("CONTA CORRENTE: Taxa de Manutenção Mensal: ISENTO");
+            System.out.println("CONTA POUPANÇA: Taxa de Rendimento Mensal: 0,9 %");
             String escolhaCategoriaStr = input.nextLine();
 
             if (!FuncoesUtil.ehNumero(escolhaCategoriaStr)) {
@@ -569,6 +566,7 @@ public class Main {
         while (true) {
             System.out.println(mensagemDeEntrada);
             String valor = input.nextLine();
+
             if (valor.isBlank()) {
                 System.err.println(mensagemDeErro);
                 continue;
