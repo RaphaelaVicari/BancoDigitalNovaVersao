@@ -172,22 +172,42 @@ public class Main {
         System.out.println("\n Categoria do cliente: " + cliente.getCategoria());
         System.out.println("Taxa de manutenção: " + cliente.getContaPoupanca().getTaxaRendimento());
 
-        System.out.println("");
-
         LocalDate now = LocalDate.now();
         LocalDate endMonth = now.withDayOfMonth(now.lengthOfMonth());
         long daysToEndMonth = now.until(endMonth, ChronoUnit.DAYS);
         int daysToEndMonthInt = (int) daysToEndMonth;
 
-
         double saldoCliente = cliente.getContaPoupanca().getSaldo();
         double rendimentoMensal = (saldoCliente * cliente.getContaPoupanca().getTaxaRendimento());
-        double rendimentoDiario = rendimentoMensal / daysToEndMonthInt ;
+        double rendimentoDiario = rendimentoMensal / daysToEndMonthInt;
+
 
         if (now.equals(endMonth)) {
-            cliente.getContaPoupanca().setSaldo(saldoCliente+= rendimentoMensal);
+            cliente.getContaPoupanca().setSaldo(saldoCliente += rendimentoMensal);
             endMonth = endMonth.plusMonths(1).withDayOfMonth(endMonth.lengthOfMonth());
         }
+        while (true) {
+            System.out.println("(1) Cálculo de rendimento da poupança");
+            System.out.println("(9) Voltar para o menu anterior");
+
+            String escolhaPoupanca = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolhaPoupanca)) {
+                System.err.println("Opção inválida, utilize somente os número mostrados no Menu!");
+                continue;
+            }
+            int escolhaPoupancaInt = Integer.parseInt(escolhaPoupanca);
+
+            switch (escolhaPoupancaInt) {
+                case 1:
+                    int days = input.nextInt();
+                    rendimentoFuturo(saldoCliente, rendimentoMensal, days);
+                    break;
+                case 9:
+                    return;
+
+            }
+        }
+
 
     }
 
@@ -197,11 +217,11 @@ public class Main {
         LocalDate userDaySelect = now.plusDays(days);
         LocalDate endMonth = now.withDayOfMonth(now.lengthOfMonth());
         double saldoInicial = saldoCliente;
-        //double rendimentoDiario = rendimentoMensal / daysToEndMonthInt ;
+
 
         while (now.isBefore(userDaySelect)) {
 
-           // endMonth;
+
             if (now.equals(endMonth)) {
 
                 saldoCliente += rendimentoMensal;
@@ -211,12 +231,12 @@ public class Main {
             }
             now = now.plusDays(1);
         }
-      // rendimentoDiario =
 
-        return saldoCliente-saldoInicial;
+        double rendimentoFinal = saldoCliente + rendimentoMensal;
+
+        return rendimentoFinal - saldoInicial;
 
     }
-
 
 
     private static void contaCorrente(Scanner input, Cliente cliente) {
