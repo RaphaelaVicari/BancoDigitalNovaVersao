@@ -10,8 +10,10 @@ import org.example.service.TransferenciaService;
 import org.example.util.FuncoesUtil;
 
 import java.time.LocalDate;
+import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
@@ -145,10 +147,10 @@ public class Main {
             switch (escolhaContaInt) {
                 case 1:
 
-                    contaCorrente(input, cliente,  );
+                    contaCorrente(input, cliente);
                     break;
                 case 2:
-                    contaPoupanca(input, cliente,);
+                    contaPoupanca(input, cliente);
 
                     break;
                 case 9:
@@ -160,18 +162,68 @@ public class Main {
 
     }
 
-    private static void contaPoupanca(Scanner input, Cliente cliente, ContaPoupanca contaPoupanca) {
+    private static void contaPoupanca(Scanner input, Cliente cliente) {
+        //TODO preciso fazer um sistema para calcular o rendimento por dia
+        // e entregar uma previsao do rendimento no futuro
+
+        System.out.println("--- Conta Poupança ---\n");
         System.out.print("Saldo Atual: ");
-        System.out.printf("R$ %.2f%", contaPoupanca.getSaldoContaPoupanca());
+        System.out.printf("R$ %.2f%", cliente.getContaPoupanca().getSaldo());
         System.out.println("\n Categoria do cliente: " + cliente.getCategoria());
-        System.out.println("Taxa de manutenção: " + contaPoupanca.getTaxaRendimento());
+        System.out.println("Taxa de manutenção: " + cliente.getContaPoupanca().getTaxaRendimento());
+
+        System.out.println("");
+
+        LocalDate now = LocalDate.now();
+        LocalDate endMonth = now.withDayOfMonth(now.lengthOfMonth());
+        long daysToEndMonth = now.until(endMonth, ChronoUnit.DAYS);
+        int daysToEndMonthInt = (int) daysToEndMonth;
+
+
+        double saldoCliente = cliente.getContaPoupanca().getSaldo();
+        double rendimentoMensal = (saldoCliente * cliente.getContaPoupanca().getTaxaRendimento());
+        double rendimentoDiario = rendimentoMensal / daysToEndMonthInt ;
+
+        if (now.equals(endMonth)) {
+            cliente.getContaPoupanca().setSaldo(saldoCliente+= rendimentoMensal);
+            endMonth = endMonth.plusMonths(1).withDayOfMonth(endMonth.lengthOfMonth());
+        }
+
     }
 
-    private static void contaCorrente(Scanner input, Cliente cliente, ContaCorrente contaCorrente) {
+    private static double rendimentoFuturo(double saldoCliente, double rendimentoMensal, int days) {
+
+        LocalDate now = LocalDate.now();
+        LocalDate userDaySelect = now.plusDays(days);
+        LocalDate endMonth = now.withDayOfMonth(now.lengthOfMonth());
+        double saldoInicial = saldoCliente;
+        //double rendimentoDiario = rendimentoMensal / daysToEndMonthInt ;
+
+        while (now.isBefore(userDaySelect)) {
+
+           // endMonth;
+            if (now.equals(endMonth)) {
+
+                saldoCliente += rendimentoMensal;
+
+                endMonth = endMonth.plusMonths(1).withDayOfMonth(endMonth.lengthOfMonth());
+
+            }
+            now = now.plusDays(1);
+        }
+      // rendimentoDiario =
+
+        return saldoCliente-saldoInicial;
+
+    }
+
+
+
+    private static void contaCorrente(Scanner input, Cliente cliente) {
         System.out.print("Saldo Atual: ");
-        System.out.printf("R$ %.2f%", (cliente.getCategoria()));
+        System.out.printf("R$ %.2f%", (cliente.getContaCorrente().getSaldo()));
         System.out.println("\n Categoria do cliente: " + cliente.getCategoria());
-        System.out.println("Taxa de manutenção: " + contaCorrente.getTaxaManutencao());
+        System.out.println("Taxa de manutenção: " + cliente.getContaCorrente().getTaxaManutencao());
     }
 
 
@@ -218,7 +270,7 @@ public class Main {
         escolherCategoria(input, novoCliente);
         criarConta(input, novoCliente);
 
-        if(clienteService.clienteNovo(novoCliente) == null){
+        if (clienteService.clienteNovo(novoCliente) == null) {
             System.err.println("Erro! Cadastro não realizado");
             return;
         }
@@ -277,13 +329,13 @@ public class Main {
 
         switch (novoCliente.getCategoria()) {
             case SUPER:
-                taxaMensal = 0.007;
+                taxaMensal = 0.07;
                 break;
             case COMUM:
-                taxaMensal = 0.005;
+                taxaMensal = 0.05;
                 break;
             case PREMIUM:
-                taxaMensal = 0.009;
+                taxaMensal = 0.09;
                 break;
             default:
                 System.err.println("Erro, cliente sem categoria!");
@@ -374,10 +426,10 @@ public class Main {
             String senha1;
             do {
                 senha1 = validarEntradaPreenchida(input,
-                        "Digite o Nome Completo",
-                        "Nome não preenchido");
+                        "Crie uma senha",
+                        "Senha não preenchida");
                 if (!FuncoesUtil.validarSenha(senha1)) {
-                    System.err.println("Nome inválido! O nome deve conter somente letras, com no mínimo 2 e no máximo 100 caracteres.");
+                    System.err.println("Senha inválida");
                 }
             } while (!FuncoesUtil.validarSenha(senha1));
 
