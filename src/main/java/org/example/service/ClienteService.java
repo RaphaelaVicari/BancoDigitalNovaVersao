@@ -3,11 +3,12 @@ package org.example.service;
 import org.example.model.Cliente;
 import org.example.repository.ClienteRepository;
 import org.example.security.PasswordSecurity;
+import org.example.util.FuncoesUtil;
 
-import java.text.MessageFormat;
+import javax.swing.text.DefaultFormatterFactory;
+import javax.swing.text.MaskFormatter;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+
 
 public class ClienteService {
 
@@ -61,7 +62,7 @@ public class ClienteService {
             int sm, i, r, num, peso;
 
             try {
-                // Calculo do primeiro Digito Verificador 
+                // Calculo do primeiro Digito Verificador
                 sm = 0;
                 peso = 10;
                 for (i = 0; i < 9; i++) {
@@ -75,7 +76,7 @@ public class ClienteService {
                 else
                     dig10 = (char) (r + 48);
 
-                // Calculo do segundo Digito Verificador 
+                // Calculo do segundo Digito Verificador
                 sm = 0;
                 peso = 11;
                 for (i = 0; i < 10; i++) {
@@ -111,21 +112,22 @@ public class ClienteService {
                 return C;
             }
         }
+        public DefaultFormatterFactory getFormat() {
+            try {
+                return new DefaultFormatterFactory(new MaskFormatter(Formato));
+            } catch (Exception e) {
+                return null;
+            }
+        }
 
     }
 
     public Cliente clienteNovo(Cliente cliente) {
 
-        if (!validarCPF(cliente)) {
+        if (validarCPF(cliente)) {
             System.err.println("CPF inválido! Não foi possível cadastrar o cliente.");
             return null;
         }
-
-
-       // if (!validarDataNascimento(cliente.getDataNascimentoCliente())) {
-           // System.err.println("Data de Nascimento inválido ou campo vazio! Não foi possível cadastrar o cliente.");
-         //   return null;
-        //}
 
 
         if (cpfJaCadastrado(cliente.getCpfCliente())) {
@@ -178,19 +180,7 @@ public class ClienteService {
         return clienteRepository.consultarClientePorCpf(cpfUtil.getCPF(true));
     }
 
-    static boolean editarPerfilUsuario(Cliente cliente) {
-
-        cliente.setCpfCliente(cliente.getCpfCliente());
-        cliente.setNomeCliente(cliente.getNomeCliente());
-        cliente.setEndereco(cliente.getEndereco());
-        cliente.setDataNascimentoCliente(cliente.getDataNascimentoCliente());
-
-
-        return true;
-    }
-
-    // Adicionar o método para validar CPF
-    private boolean validarCPF(Cliente cliente) {
+   private boolean validarCPF(Cliente cliente) {
         CPF cpfUtil = new CPF(cliente.getCpfCliente());
 
         if (!cpfUtil.isCPF()) {
@@ -201,64 +191,12 @@ public class ClienteService {
         return true;
     }
 
-
     public boolean checkSenha(Cliente cliente, String senha) {
 
         return PasswordSecurity.checkSenha(senha, cliente.getSenhaCliente());
 
     }
 
-    public boolean validarEmail(String email) {
-        // Define a expressão regular para validar o formato do e-mail
-        String regex = "^[a-zA-Z0-9_+&*-]+(?:\\.[a-zA-Z0-9_+&*-]+)*@(?:[a-zA-Z0-9-]+\\.)+[a-zA-Z]{2,7}$";
-
-        // Compila a expressão regular
-        Pattern pattern = Pattern.compile(regex);
-
-        // Cria um objeto Matcher para o e-mail fornecido
-        Matcher matcher = pattern.matcher(email);
-
-        // Verifica se o e-mail corresponde ao padrão definido
-        return matcher.matches();
-    }
-    
- // Método para formatar o número de celular
-    private String formatarNumeroCelular(String numeroCelular) {
-        // Remove todos os caracteres não numéricos
-        String numeroApenasDigitos = numeroCelular.replaceAll("\\D", "");
-
-        // Verifica se o número tem 10 ou 11 dígitos
-        if (numeroApenasDigitos.length() == 10 || numeroApenasDigitos.length() == 11) {
-            return MessageFormat.format("({0}) {1}-{2}",
-                    numeroApenasDigitos.substring(0, 2),
-                    numeroApenasDigitos.substring(2, 7),
-                    numeroApenasDigitos.substring(7));
-        }
-
-        return numeroCelular;
-    }
-
-    // Método para validar número de celular
-    public boolean validarNumeroCelular(String numeroCelular) {
-        // Formato aceito: (XX) XXXXX-XXXX ou (XX) XXXX-XXXX ou XXXXXXXXXXX
-        String regexNumeroCelular = "(\\(\\d{2}\\)\\d{4,5}-\\d{4})|\\d{11}|\\d{10}";
-
-        Pattern pattern = Pattern.compile(regexNumeroCelular);
-        Matcher matcher = pattern.matcher(numeroCelular);
-
-        return matcher.matches();
-    }
-
-    // Método para validar data de nascimento
-    public boolean validarDataNascimento(String dataNascimento) {
-        // Formato aceito: DD/MM/YYYY
-        String regexDataNascimento = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/(19|20)\\d\\d$";
-
-        Pattern pattern = Pattern.compile(regexDataNascimento);
-        Matcher matcher = pattern.matcher(dataNascimento);
-
-        return matcher.matches();
-    }
 
 }
 

@@ -130,18 +130,43 @@ public class Main {
         // conta poupança mostrar a opção de saldo e o rendimento atual da conta {Patrick}
     }
 
+
     private static void cadastrarNovoCliente(Scanner input) {
         Cliente novoCliente = new Cliente();
 
         //todo aplicar regex no cpf, deve conter pontuação {Willians}
-        novoCliente.setCpfCliente(validarEntradaPreenchida(input,
-                "Digite o CPF (ex:000.000.000-00)",
-                "CPF não preenchido"));
+
+        do {
+            String cpfCliente = validarEntradaPreenchida(input,
+                    "Digite o CPF (ex:000.000.000-00)",
+                    "CPF não preechido");
+            if (!FuncoesUtil.validarFormatoCpf(cpfCliente)) {
+                System.err.println("Erro! O CPF deve estar com formatação correta.");
+                continue;
+            }
+            if (!FuncoesUtil.validarCPF(cpfCliente)) {
+                System.err.println("CPF inválido! O CPF deve ser valido!");
+                continue;
+            }
+            novoCliente.setCpfCliente(cpfCliente);
+            break;
+        } while (true);
+
 
         //todo aplicar regex no nome do cliente, deve ter mais de duas letras e no maximo 100 letrase nao pode conter numero {Willians}
-        novoCliente.setNomeCliente(validarEntradaPreenchida(input,
-                "Digite o Nome Completo",
-                "Nome não preenchido"));
+
+
+        do {
+            String nomeCliente = validarEntradaPreenchida(input,
+                    "Digite o Nome Completo",
+                    "Nome não preenchido");
+            if (!FuncoesUtil.validarNomeCliente(nomeCliente)) {
+                System.err.println("Nome inválido! O nome deve conter somente letras, com no mínimo 2 e no máximo 100 caracteres.");
+                continue;
+            }
+            novoCliente.setNomeCliente(nomeCliente);
+            break;
+        } while (true);
 
         preencherDataNascimento(input, novoCliente);
         preencherEndereco(input, novoCliente);
@@ -301,13 +326,24 @@ public class Main {
         while (true) {
 
             //todo aplicar regex para senha ser somente numerica e com 4 digitos {Willians}
-            String senha1 = validarEntradaPreenchida(input,
-                    "Digite a senha",
-                    "Senha não preenchida");
 
-            String senha2 = validarEntradaPreenchida(input,
-                    "Digite novamente a Senha para confirmação",
-                    "Senha não preenchida");
+            String senha1;
+            do {
+                senha1 = validarEntradaPreenchida(input,
+                        "Digite o Nome Completo",
+                        "Nome não preenchido");
+                if (!FuncoesUtil.validarSenha(senha1)) {
+                    System.err.println("Nome inválido! O nome deve conter somente letras, com no mínimo 2 e no máximo 100 caracteres.");
+                }
+            } while (!FuncoesUtil.validarSenha(senha1));
+
+            String senha2;
+            do {
+                senha2 = validarEntradaPreenchida(input,
+                        "Digite novamente a Senha para confirmação",
+                        "Senha não preenchida");
+
+            } while (!FuncoesUtil.validarSenha(senha2));
 
             if (!senha1.equals(senha2))
                 continue;
@@ -342,16 +378,34 @@ public class Main {
                 "Cidade não preenchida"));
 
         //todo aplicar regex no uf duas letras somente e maiusculas {Willians}
-        enderecoCliente.setEstado(validarEntradaPreenchida(input,
-                "Digite o Estado em UF (ex:SP)",
-                "UF não preenchido"));
+
+        String uf;
+        do {
+            uf = validarEntradaPreenchida(input,
+                    "Digite o Estado em UF (ex:SP)",
+                    "UF não preenchido");
+            if (!FuncoesUtil.validarUF(uf)) {
+                System.err.println("UF inválido! UF deve conter somente letras, com no mínimo 2 letras.");
+            }
+        } while (!FuncoesUtil.validarUF(uf));
+
+        enderecoCliente.setEstado(uf);
+
 
         //todo aplicar regex do cep {Willians}
-        enderecoCliente.setCep(validarEntradaPreenchida(input,
-                "Digite o CEP (ex:00000-000)",
-                "CEP não preenchido"));
 
-        novoCliente.setEndereco(enderecoCliente);
+        String cep;
+        do {
+            cep = validarEntradaPreenchida(input,
+                    "Digite o CEP (ex:00000-000)",
+                    "CEP não preenchido");
+            if (!FuncoesUtil.validarCEP(cep)) {
+                System.err.println("CEP inválido! CEP deve conter somente números.");
+            }
+        } while (!FuncoesUtil.validarCEP(cep));
+
+        enderecoCliente.setCep(cep);
+
     }
 
     private static void escolherCategoria(Scanner input, Cliente novoCliente) {
