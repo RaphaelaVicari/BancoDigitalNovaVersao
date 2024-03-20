@@ -1,8 +1,5 @@
 package org.example.util;
 
-import org.example.model.Cliente;
-import org.example.service.ClienteService;
-
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
 import java.util.regex.Matcher;
@@ -11,9 +8,6 @@ import java.util.regex.Pattern;
 public class FuncoesUtil {
 
     private static final Pattern NUMBER_PATTERN = Pattern.compile("-?\\d+(\\.\\d+)?");
-
-    private FuncoesUtil() {
-    }
 
     public static String formatarColuna(String nomeColuna, int tamanhoColuna) {
         if (nomeColuna.length() > tamanhoColuna) {

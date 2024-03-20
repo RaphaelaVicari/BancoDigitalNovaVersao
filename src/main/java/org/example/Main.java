@@ -2,7 +2,6 @@ package org.example;
 
 import org.example.model.*;
 import org.example.repository.ClienteRepository;
-import org.example.security.PasswordSecurity;
 import org.example.service.CartaoService;
 import org.example.service.ClienteService;
 import org.example.service.ContaService;
@@ -250,12 +249,11 @@ public class Main {
     private static void cadastrarNovoCliente(Scanner input) {
         Cliente novoCliente = new Cliente();
 
-        //todo aplicar regex no cpf, deve conter pontuação {Willians}
-
         do {
             String cpfCliente = validarEntradaPreenchida(input,
                     "Digite o CPF (ex:000.000.000-00)",
                     "CPF não preechido");
+
             if (!FuncoesUtil.validarFormatoCpf(cpfCliente)) {
                 System.err.println("Erro! O CPF deve estar com formatação correta.");
                 continue;
@@ -284,13 +282,14 @@ public class Main {
             break;
         } while (true);
 
+
         preencherDataNascimento(input, novoCliente);
         preencherEndereco(input, novoCliente);
         preencherSenha(input, novoCliente);
         escolherCategoria(input, novoCliente);
         criarConta(input, novoCliente);
 
-        if (clienteService.clienteNovo(novoCliente) == null) {
+        if(clienteService.clienteNovo(novoCliente) == null){
             System.err.println("Erro! Cadastro não realizado");
             return;
         }
@@ -349,13 +348,13 @@ public class Main {
 
         switch (novoCliente.getCategoria()) {
             case SUPER:
-                taxaMensal = 0.07;
+                taxaMensal = 0.007;
                 break;
             case COMUM:
-                taxaMensal = 0.05;
+                taxaMensal = 0.005;
                 break;
             case PREMIUM:
-                taxaMensal = 0.09;
+                taxaMensal = 0.009;
                 break;
             default:
                 System.err.println("Erro, cliente sem categoria!");
@@ -439,35 +438,37 @@ public class Main {
     }
 
     private static void preencherSenha(Scanner input, Cliente novoCliente) {
-        while (true) {
-
-            //todo aplicar regex para senha ser somente numerica e com 4 digitos {Willians}
 
             String senha1;
             do {
                 senha1 = validarEntradaPreenchida(input,
-                        "Crie uma senha",
-                        "Senha não preenchida");
-                if (!FuncoesUtil.validarSenha(senha1)) {
-                    System.err.println("Senha inválida");
-                }
-            } while (!FuncoesUtil.validarSenha(senha1));
+                        "Digite uma senha",
+                        "Senha não preenchido");
 
-            String senha2;
+                if (!FuncoesUtil.validarSenha(senha1)) {
+                    System.err.println("Senha invalida! Crie uma senha de 4 digitos.");
+                   continue;
+                }
+                novoCliente.setSenhaCliente(senha1);
+                break;
+
+            } while (true);
+
             do {
-                senha2 = validarEntradaPreenchida(input,
+                String senha2 = validarEntradaPreenchida(input,
                         "Digite novamente a Senha para confirmação",
                         "Senha não preenchida");
 
-            } while (!FuncoesUtil.validarSenha(senha2));
+                if (!senha1.equals(senha2)) {
+                    System.err.println("Senha incorreta! Verifique a senha digitada.");
+                    continue;
+                }
+                novoCliente.setSenhaCliente(senha1);
+                break;
 
-            if (!senha1.equals(senha2))
-                continue;
-
-            novoCliente.setSenhaCliente(senha1);
-            break;
-        }
+            } while (true);
     }
+
 
     private static void preencherEndereco(Scanner input, Cliente novoCliente) {
         System.out.println("* ENDEREÇO *\n");
@@ -493,34 +494,29 @@ public class Main {
                 "Digite a Cidade",
                 "Cidade não preenchida"));
 
-        //todo aplicar regex no uf duas letras somente e maiusculas {Willians}
-
-        String uf;
         do {
-            uf = validarEntradaPreenchida(input,
+           String uf = validarEntradaPreenchida(input,
                     "Digite o Estado em UF (ex:SP)",
                     "UF não preenchido");
             if (!FuncoesUtil.validarUF(uf)) {
                 System.err.println("UF inválido! UF deve conter somente letras, com no mínimo 2 letras.");
+                continue;
             }
-        } while (!FuncoesUtil.validarUF(uf));
+            enderecoCliente.setEstado(uf);
+            break;
+        } while (true);
 
-        enderecoCliente.setEstado(uf);
-
-
-        //todo aplicar regex do cep {Willians}
-
-        String cep;
         do {
-            cep = validarEntradaPreenchida(input,
+            String cep = validarEntradaPreenchida(input,
                     "Digite o CEP (ex:00000-000)",
                     "CEP não preenchido");
             if (!FuncoesUtil.validarCEP(cep)) {
                 System.err.println("CEP inválido! CEP deve conter somente números.");
+                continue;
             }
-        } while (!FuncoesUtil.validarCEP(cep));
-
-        enderecoCliente.setCep(cep);
+            enderecoCliente.setCep(cep);
+            break;
+        } while (true);
 
     }
 
