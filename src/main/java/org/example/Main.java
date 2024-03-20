@@ -128,6 +128,50 @@ public class Main {
         //todo implementar menu de acesso para cada tipo de conta
         // conta corrente mostrar a opção de saldo e o custo atual da taxa de manutenção
         // conta poupança mostrar a opção de saldo e o rendimento atual da conta {Patrick}
+
+
+        while (true) {
+            System.out.println("(1) Conta Corrente");
+            System.out.println("(2) Conta Poupança");
+            System.out.println("(9) Voltar para o menu anterior");
+
+            String escolhaConta = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolhaConta)) {
+                System.err.println("Opção inválida, utilize somente os número mostrados no Menu!");
+                continue;
+            }
+            int escolhaContaInt = Integer.parseInt(escolhaConta);
+
+            switch (escolhaContaInt) {
+                case 1:
+
+                    contaCorrente(input, cliente,  );
+                    break;
+                case 2:
+                    contaPoupanca(input, cliente,);
+
+                    break;
+                case 9:
+                    return;
+            }
+
+
+        }
+
+    }
+
+    private static void contaPoupanca(Scanner input, Cliente cliente, ContaPoupanca contaPoupanca) {
+        System.out.print("Saldo Atual: ");
+        System.out.printf("R$ %.2f%", contaPoupanca.getSaldoContaPoupanca());
+        System.out.println("\n Categoria do cliente: " + cliente.getCategoria());
+        System.out.println("Taxa de manutenção: " + contaPoupanca.getTaxaRendimento());
+    }
+
+    private static void contaCorrente(Scanner input, Cliente cliente, ContaCorrente contaCorrente) {
+        System.out.print("Saldo Atual: ");
+        System.out.printf("R$ %.2f%", (cliente.getCategoria()));
+        System.out.println("\n Categoria do cliente: " + cliente.getCategoria());
+        System.out.println("Taxa de manutenção: " + contaCorrente.getTaxaManutencao());
     }
 
 
