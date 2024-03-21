@@ -1136,7 +1136,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
             for (int i = 0; i < conta.getCartaoDebito().size(); i++) {
                 Cartao c = conta.getCartaoDebito().get(i);
 
-                if(c.getStatus() == CartaoStatus.CANCELADO)
+                if (c.getStatus() == CartaoStatus.CANCELADO)
                     continue;
 
                 System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
@@ -1168,7 +1168,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
                 continue;
             }
 
-            if(!cartaoService.cancelarCartao(c)){
+            if (!cartaoService.cancelarCartao(c)) {
                 System.err.println("Falha ao cancelar o cartao");
                 continue;
             }
@@ -1230,108 +1230,110 @@ private static void menuContas(Scanner input, Cliente cliente) {
         }
     }
 
-        private static void adquirirCartaoDebito(Cliente cliente, Conta conta){
-            Cartao cartaoCriado = cartaoService.adquirirCartaoDebito(cliente, conta);
-            //TODO demonstrar os dados do cartao criado {Patrick}
-        }
+    private static void adquirirCartaoDebito(Cliente cliente, Conta conta) {
+        Cartao cartaoCriado = cartaoService.adquirirCartaoDebito(cliente, conta);
+        System.out.println("Segue as informações de seu novo cartão:");
+        System.out.println(cartaoCriado);
+        //TODO demonstrar os dados do cartao criado {Patrick}
+    }
 
-        public static void menuCartaoCredito (Scanner input, Cliente cliente, Conta conta){
-            while (true) {
-                //todo para todas as operções exceto adquirir cartao, deve ser identificado
-                // o cartao que o usuario deseja fazer as operações {Patrick}
-                System.out.println("\n== Cartão de Crédito ==");
-                System.out.println("(1) Adquirir Cartão");
-                System.out.println("(2) Alterar Limite");
-                System.out.println("(3) Seguro Cartão");
-                System.out.println("(4) Cancelar Cartão");
-                System.out.println("(9) Voltar Para o Menu Anterior");
+    public static void menuCartaoCredito(Scanner input, Cliente cliente, Conta conta) {
+        while (true) {
+            //todo para todas as operções exceto adquirir cartao, deve ser identificado
+            // o cartao que o usuario deseja fazer as operações {Patrick}
+            System.out.println("\n== Cartão de Crédito ==");
+            System.out.println("(1) Adquirir Cartão");
+            System.out.println("(2) Alterar Limite");
+            System.out.println("(3) Seguro Cartão");
+            System.out.println("(4) Cancelar Cartão");
+            System.out.println("(9) Voltar Para o Menu Anterior");
 
-                //todo listar todos os cartoes de credito {Patrick}
+            //todo listar todos os cartoes de credito {Patrick}
 
-                String escolherCreditoMenu = input.nextLine();
-                if (!FuncoesUtil.ehNumero(escolherCreditoMenu)) {
-                    System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
-                    continue;
-                }
-                int escolherCreditoMenuInt = Integer.parseInt(escolherCreditoMenu);
-
-                switch (escolherCreditoMenuInt) {
-                    //adquirir cartao
-                    case 1:
-                        break;
-                    //alterar limite
-                    case 2:
-                        break;
-                    //menu de seguro do cartao
-                    case 3:
-                        menuSeguro(input);
-                        break;
-                    //cancelar cartao
-                    case 4:
-                        break;
-                    //Voltar menu
-                    case 9:
-                        return;
-
-                }
+            String escolherCreditoMenu = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolherCreditoMenu)) {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                continue;
             }
-        }
+            int escolherCreditoMenuInt = Integer.parseInt(escolherCreditoMenu);
 
-        public static void menuSeguro (Scanner input){
-            while (true) {
-                System.out.println("\n== Meu Seguro ==");
-                System.out.println("(1) Adquirir Seguro");
-                System.out.println("(2) Consultar Seguros Adquiridos ");
-                System.out.println("(3) Cancelar Seguro ");
-                System.out.println("(9) Voltar Para o Menu Anterior");
-
-                String escolherSeguroMenu = input.nextLine();
-                if (!FuncoesUtil.ehNumero(escolherSeguroMenu)) {
-                    System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
-                    continue;
-                }
-                int escolherSeguroMenuInt = Integer.parseInt(escolherSeguroMenu);
-
-                switch (escolherSeguroMenuInt) {
-                    //adquirir seguro
-                    case 1:
-                        break;
-                    //consultar seguro
-                    case 2:
-                        break;
-                    //cancelar seguro
-                    case 3:
-                        break;
-                    //Voltar menu
-                    case 9:
-                        return;
-
-                }
+            switch (escolherCreditoMenuInt) {
+                //adquirir cartao
+                case 1:
+                    break;
+                //alterar limite
+                case 2:
+                    break;
+                //menu de seguro do cartao
+                case 3:
+                    menuSeguro(input);
+                    break;
+                //cancelar cartao
+                case 4:
+                    break;
+                //Voltar menu
+                case 9:
+                    return;
 
             }
-        }
-
-        public static void aberturaBanco () {
-            System.out.println("   d888888o.   8888888 8888888888         .8.          8 888888888o.  ");
-            System.out.println(" .`8888:' `88.       8 8888              .888.         8 8888    `88. ");
-            System.out.println(" 8.`8888.   Y8       8 8888             :88888.        8 8888     `88  ");
-            System.out.println(" `8.`8888.           8 8888            . `88888.       8 8888     ,88 ");
-            System.out.println("  `8.`8888.          8 8888           .8. `88888.      8 8888.   ,88' ");
-            System.out.println("   `8.`8888.         8 8888          .8`8. `88888.     8 888888888P'  ");
-            System.out.println("    `8.`8888.        8 8888         .8' `8. `88888.    8 8888`8b      ");
-            System.out.println("8b   `8.`8888.       8 8888        .8'   `8. `88888.   8 8888 `8b.    ");
-            System.out.println("`8b.  ;8.`8888       8 8888       .888888888. `88888.  8 8888   `8b.  ");
-            System.out.println(" `Y8888P ,88P'       8 8888      .8'       `8. `88888. 8 8888     `88.");
-            System.out.println(" 8 888888888o            .8.          b.             8 8 8888     ,88'  ");
-            System.out.println(" 8 8888    `88.         .888.         888o.          8 8 8888    ,88'   ");
-            System.out.println(" 8 8888     `88        :88888.        Y88888o.       8 8 8888   ,88'    ");
-            System.out.println(" 8 8888     ,88       . `88888.       .`Y888888o.    8 8 8888  ,88'     ");
-            System.out.println(" 8 8888.   ,88'      .8. `88888.      8o. `Y888888o. 8 8 8888 ,88'      ");
-            System.out.println(" 8 8888888888       .8`8. `88888.     8`Y8o. `Y88888o8 8 8888 88'       ");
-            System.out.println(" 8 8888    `88.    .8' `8. `88888.    8   `Y8o. `Y8888 8 888888<        ");
-            System.out.println(" 8 8888      88   .8'   `8. `88888.   8      `Y8o. `Y8 8 8888 `Y8.      ");
-            System.out.println(" 8 8888    ,88'  .888888888. `88888.  8         `Y8o.` 8 8888   `Y8.    ");
-            System.out.println(" 8 888888888P   .8'       `8. `88888. 8            `Yo 8 8888     `Y8.  ");
         }
     }
+
+    public static void menuSeguro(Scanner input) {
+        while (true) {
+            System.out.println("\n== Meu Seguro ==");
+            System.out.println("(1) Adquirir Seguro");
+            System.out.println("(2) Consultar Seguros Adquiridos ");
+            System.out.println("(3) Cancelar Seguro ");
+            System.out.println("(9) Voltar Para o Menu Anterior");
+
+            String escolherSeguroMenu = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolherSeguroMenu)) {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                continue;
+            }
+            int escolherSeguroMenuInt = Integer.parseInt(escolherSeguroMenu);
+
+            switch (escolherSeguroMenuInt) {
+                //adquirir seguro
+                case 1:
+                    break;
+                //consultar seguro
+                case 2:
+                    break;
+                //cancelar seguro
+                case 3:
+                    break;
+                //Voltar menu
+                case 9:
+                    return;
+
+            }
+
+        }
+    }
+
+    public static void aberturaBanco() {
+        System.out.println("   d888888o.   8888888 8888888888         .8.          8 888888888o.  ");
+        System.out.println(" .`8888:' `88.       8 8888              .888.         8 8888    `88. ");
+        System.out.println(" 8.`8888.   Y8       8 8888             :88888.        8 8888     `88  ");
+        System.out.println(" `8.`8888.           8 8888            . `88888.       8 8888     ,88 ");
+        System.out.println("  `8.`8888.          8 8888           .8. `88888.      8 8888.   ,88' ");
+        System.out.println("   `8.`8888.         8 8888          .8`8. `88888.     8 888888888P'  ");
+        System.out.println("    `8.`8888.        8 8888         .8' `8. `88888.    8 8888`8b      ");
+        System.out.println("8b   `8.`8888.       8 8888        .8'   `8. `88888.   8 8888 `8b.    ");
+        System.out.println("`8b.  ;8.`8888       8 8888       .888888888. `88888.  8 8888   `8b.  ");
+        System.out.println(" `Y8888P ,88P'       8 8888      .8'       `8. `88888. 8 8888     `88.");
+        System.out.println(" 8 888888888o            .8.          b.             8 8 8888     ,88'  ");
+        System.out.println(" 8 8888    `88.         .888.         888o.          8 8 8888    ,88'   ");
+        System.out.println(" 8 8888     `88        :88888.        Y88888o.       8 8 8888   ,88'    ");
+        System.out.println(" 8 8888     ,88       . `88888.       .`Y888888o.    8 8 8888  ,88'     ");
+        System.out.println(" 8 8888.   ,88'      .8. `88888.      8o. `Y888888o. 8 8 8888 ,88'      ");
+        System.out.println(" 8 8888888888       .8`8. `88888.     8`Y8o. `Y88888o8 8 8888 88'       ");
+        System.out.println(" 8 8888    `88.    .8' `8. `88888.    8   `Y8o. `Y8888 8 888888<        ");
+        System.out.println(" 8 8888      88   .8'   `8. `88888.   8      `Y8o. `Y8 8 8888 `Y8.      ");
+        System.out.println(" 8 8888    ,88'  .888888888. `88888.  8         `Y8o.` 8 8888   `Y8.    ");
+        System.out.println(" 8 888888888P   .8'       `8. `88888. 8            `Yo 8 8888     `Y8.  ");
+    }
+}
 
