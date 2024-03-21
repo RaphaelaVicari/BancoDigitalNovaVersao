@@ -277,7 +277,6 @@ public class Main {
             break;
         } while (true);
 
-
         preencherDataNascimento(input, novoCliente);
         preencherEndereco(input, novoCliente);
         preencherSenha(input, novoCliente);
@@ -406,28 +405,36 @@ public class Main {
 
     private static void preencherDataNascimento(Scanner input, Cliente novoCliente) {
         while (true) {
-            //TODO COLOCAR IDADE LIMITE (100 ANOS) PARA REALIZAR CADASTRO CONTA {Willians}
-            System.out.println("Digite a Data de Nascimento (ex:dd/MM/yyyy)");
-            String dtNasc = input.nextLine();
 
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            do {
+                String dtNasc = validarEntradaPreenchida(input,
+                        "Digite a Data de Nascimento (ex: dd/mm/yyyy)",
+                        "Data de Nascimento não preenchida");
 
-            try {
-                LocalDate parse = LocalDate.parse(dtNasc, formatter);
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 
-                LocalDate now = LocalDate.now().minusYears(18);
+                try {
+                    LocalDate parse = LocalDate.parse(dtNasc, formatter);
 
-                if (parse.isAfter(now)) {
-                    System.err.println("Erro, precisa ser maior de 18 anos");
-                    continue;
+                    LocalDate now = LocalDate.now().minusYears(18);
+                    if (parse.isAfter(now)) {
+                        System.err.println("Erro! Você precisa ter mais de 18 anos para realizar o cadastro.");
+                        continue;
+                    }
+
+                    now = LocalDate.now().minusYears(100);
+                    if (parse.isBefore(now)) {
+                        System.err.println("Erro! Você não pode ter mais de 100 anos para realizar o cadastro.");
+                        continue;
+                    }
+                    novoCliente.setDataNascimentoCliente(parse);
+                    break;
+
+                } catch (Exception e) {
+                    System.err.println("Formato de data informado inválido, tente novamente.");
                 }
 
-                novoCliente.setDataNascimentoCliente(parse);
-            } catch (DateTimeParseException e) {
-                System.err.println("Formato de data informado inválido, tente novamente");
-                continue;
-            }
-
+            } while (true);
             break;
         }
     }
@@ -440,12 +447,11 @@ public class Main {
                     "Crie uma senha com 4 números (ex:0000)",
                     "Senha não preenchida");
             if (!FuncoesUtil.validarSenha(senha1)) {
-                System.err.println("Senha invalida! Crie uma senha de 4 digitos.");
+                System.err.println("Senha invalida! Crie uma senha númerica de 4 digitos.");
                 continue;
             }
             novoCliente.setSenhaCliente(senha1);
             break;
-
         } while (true);
 
         do {
@@ -459,10 +465,8 @@ public class Main {
             }
             novoCliente.setSenhaCliente(senha1);
             break;
-
         } while (true);
     }
-
 
     private static void preencherEndereco(Scanner input, Cliente novoCliente) {
         System.out.println("* ENDEREÇO *\n");
@@ -494,6 +498,7 @@ public class Main {
                     "UF não preenchido");
             if (!FuncoesUtil.validarUF(uf)) {
                 System.err.println("UF inválido! UF deve conter somente letras maiuscuslas, com no máximo 2 letras (ex:SP)");
+                continue;
             }
             enderecoCliente.setEstado(uf);
             break;
@@ -504,12 +509,12 @@ public class Main {
                     "Digite o CEP (ex:00000-000)",
                     "CEP não preenchido");
             if (!FuncoesUtil.validarCEP(cep)) {
-                System.err.println("CEP inválido! CEP deve contar a pontuação (ex:00000-000).");
+                System.err.println("CEP inválido! CEP deve contar so números e a pontuação (ex:00000-000).");
+                continue;
             }
             enderecoCliente.setCep(cep);
             break;
         } while (true);
-
     }
 
     private static void escolherCategoria(Scanner input, Cliente novoCliente) {

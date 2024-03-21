@@ -24,22 +24,11 @@ public class FuncoesUtil {
         return NUMBER_PATTERN.matcher(entrada).matches();
     }
 
-    //todo criar as funções staticas de validacao de regex aqui nessa classe, vulgo exemplo acima {Willians}
     public static boolean validarNomeCliente(String nome) {
         String padrao = "^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]{2,100}$";
 
         Pattern pattern = Pattern.compile(padrao);
         Matcher matcher = pattern.matcher(nome);
-
-        return matcher.matches();
-    }
-
-    public static boolean validarDataNascimento(String dataNascimento) {
-        // Formato aceito: DD/MM/YYYY
-        String regexDataNascimento = "^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/(19|20)\\d\\d$";
-
-        Pattern pattern = Pattern.compile(regexDataNascimento);
-        Matcher matcher = pattern.matcher(dataNascimento);
 
         return matcher.matches();
     }
@@ -159,7 +148,6 @@ public class FuncoesUtil {
                 return null;
             }
         }
-
     }
 
     public static boolean validarCPF(String cliente) {
@@ -168,7 +156,6 @@ public class FuncoesUtil {
         if (!cpfUtil.isCPF()) {
             return false;
         }
-
         return true;
     }
 
