@@ -1,5 +1,6 @@
 package org.example.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.util.ArrayList;
@@ -25,6 +26,8 @@ public class Conta {
 
     public Conta() {
         cartoes = new HashMap<>();
+        cartoes.put(TipoCartao.CREDITO, new ArrayList<>());
+        cartoes.put(TipoCartao.DEBITO, new ArrayList<>());
         transferencias = new ArrayList<>();
     }
 
@@ -83,6 +86,33 @@ public class Conta {
                 ", numeroAgencia='" + numeroAgencia + '\'' +
                 ", digitoConta='" + digitoConta + '\'' +
                 '}';
+    }
+    public Map<TipoCartao, List<Cartao>> getCartoes() {
+        return cartoes;
+    }
+
+    public boolean adicionarCartaoCredito(Cartao cartao) {
+        return adicionarCartao(TipoCartao.CREDITO, cartao);
+    }
+
+    public boolean adicionarCartaoDebito(Cartao cartao) {
+        return adicionarCartao(TipoCartao.DEBITO, cartao);
+    }
+
+    @JsonIgnore
+    public List<Cartao> getCartaoDebito(){
+        return cartoes.get(TipoCartao.DEBITO);
+    }
+    @JsonIgnore
+    public List<Cartao> getCartaoCredito() {
+        return cartoes.get(TipoCartao.CREDITO);
+    }
+
+    private boolean adicionarCartao(TipoCartao debito, Cartao cartao) {
+        List<Cartao> cartoes = this.cartoes.get(debito);
+        boolean res = cartoes.add(cartao);
+        this.cartoes.put(debito, cartoes);
+        return res;
     }
 
 }

@@ -1,5 +1,6 @@
 package org.example.model;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 
@@ -19,7 +20,7 @@ public class Cartao {
 
     private Double valorLimite;
 
-    private LocalDateTime dataVencimento;
+    private LocalDate dataVencimento;
 
     private CartaoStatus status;
 
@@ -92,11 +93,11 @@ public class Cartao {
         this.valorLimite = valorLimite;
     }
 
-    public LocalDateTime getDataVencimento() {
+    public LocalDate getDataVencimento() {
         return dataVencimento;
     }
 
-    public void setDataVencimento(LocalDateTime dataVencimento) {
+    public void setDataVencimento(LocalDate dataVencimento) {
         this.dataVencimento = dataVencimento;
     }
 

@@ -3,10 +3,7 @@ package org.example.model;
 
 public class ContaCorrente extends Conta {
 
-
     private Double taxaManutencao;
-
-
 
     public Double getTaxaManutencao() {
         return taxaManutencao;

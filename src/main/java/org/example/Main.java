@@ -9,11 +9,8 @@ import org.example.service.TransferenciaService;
 import org.example.util.FuncoesUtil;
 
 import java.time.LocalDate;
-import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.time.temporal.ChronoUnit;
-import java.util.Map;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -79,15 +76,18 @@ public class Main {
         while (true) {
             System.out.println("\n=== " + cliente.getNomeCliente() + " ===\n");
 
-            mostrarDadosConta(cliente.getContaCorrente());
-            mostrarDadosConta(cliente.getContaPoupanca());
+            if (cliente.getContaCorrente() != null)
+                mostrarDadosConta(cliente.getContaCorrente());
+
+            if (cliente.getContaPoupanca() != null)
+                mostrarDadosConta(cliente.getContaPoupanca());
 
             System.out.println("(1) Trasferência");
             System.out.println("(2) Perfil");
             System.out.println("(3) Cartão");
             System.out.println("(4) Conta");
             System.out.println("(9) Sair");
-            System.out.print("Escolha a opção desejada: ");
+            System.out.println("Escolha a opção desejada: ");
 
             String logadoUsuario = input.nextLine();
             if (!FuncoesUtil.ehNumero(logadoUsuario)) {
@@ -104,7 +104,7 @@ public class Main {
                     meuPerfil(input, cliente);
                     break;
                 case 3:
-                    menuCartao(input, cliente);
+                    menuEscolhaContaCartao(input, cliente);
                     break;
                 case 4:
                     menuContas(input, cliente);
@@ -126,10 +126,6 @@ public class Main {
     }
 
     private static void menuContas(Scanner input, Cliente cliente) {
-        //todo implementar menu de acesso para cada tipo de conta
-        // conta corrente mostrar a opção de saldo e o custo atual da taxa de manutenção
-        // conta poupança mostrar a opção de saldo e o rendimento atual da conta {Patrick}
-
 
         while (true) {
             System.out.println("(1) Conta Corrente");
@@ -145,48 +141,29 @@ public class Main {
 
             switch (escolhaContaInt) {
                 case 1:
-
                     contaCorrente(input, cliente);
                     break;
                 case 2:
                     contaPoupanca(input, cliente);
-
                     break;
                 case 9:
                     return;
             }
-
-
         }
-
     }
 
     private static void contaPoupanca(Scanner input, Cliente cliente) {
-        //TODO preciso fazer um sistema para calcular o rendimento por dia
-        // e entregar uma previsao do rendimento no futuro
 
-        System.out.println("--- Conta Poupança ---\n");
-        System.out.print("Saldo Atual: ");
-        System.out.printf("R$ %.2f%", cliente.getContaPoupanca().getSaldo());
-        System.out.println("\n Categoria do cliente: " + cliente.getCategoria());
-        System.out.println("Taxa de manutenção: " + cliente.getContaPoupanca().getTaxaRendimento());
-
-        LocalDate now = LocalDate.now();
-        LocalDate endMonth = now.withDayOfMonth(now.lengthOfMonth());
-        long daysToEndMonth = now.until(endMonth, ChronoUnit.DAYS);
-        int daysToEndMonthInt = (int) daysToEndMonth;
-
-        double saldoCliente = cliente.getContaPoupanca().getSaldo();
-        double rendimentoMensal = (saldoCliente * cliente.getContaPoupanca().getTaxaRendimento());
-        //double rendimentoDiario = rendimentoMensal / daysToEndMonthInt;
-
-
-        if (now.equals(endMonth)) {
-            cliente.getContaPoupanca().setSaldo(saldoCliente += rendimentoMensal);
-            endMonth = endMonth.plusMonths(1).withDayOfMonth(endMonth.lengthOfMonth());
-        }
         while (true) {
-            System.out.println("(1) Cálculo de rendimento da poupança");
+            System.out.println("--- Conta Poupança ---\n");
+            System.out.println("Saldo Atual: ");
+            System.out.printf("R$ %.2f", cliente.getContaPoupanca().getSaldo());
+            System.out.println("\nCategoria do cliente: " + cliente.getCategoria());
+            System.out.println("Taxa de rendimento: " + cliente.getContaPoupanca().getTaxaRendimento());
+
+            System.out.println("(1) Cálcular rendimento da poupança");
+            System.out.println("(2) Calcular provisão da poupança até o fim do mês");
+            System.out.println("(3) Cálcular provisão de rendimento da poupança por uma determinada quantidade de dias");
             System.out.println("(9) Voltar para o menu anterior");
 
             String escolhaPoupanca = input.nextLine();
@@ -196,56 +173,74 @@ public class Main {
             }
             int escolhaPoupancaInt = Integer.parseInt(escolhaPoupanca);
 
+            double rendimento = 0;
+
             switch (escolhaPoupancaInt) {
                 case 1:
-                    System.out.println("Digite quantos dias você deseja deixar o dinheiro rendendo na poupança");
-                    int days = input.nextInt();
-                    double rendimentoDiariaPrevisao = rendimentoFuturo(saldoCliente, rendimentoMensal, days) / days;
-                    System.out.println("Após " + days + "sua conta terá rendido " + rendimentoDiariaPrevisao + "por dia");
-                    System.out.println("Totalizando "+(rendimentoFuturo(saldoCliente, rendimentoMensal, days)+saldoCliente));
+                    rendimento = contaService.calcularRendimentoPoupanca(cliente);
+                    System.out.printf("O rendimento atual é R$ %.2f\n", rendimento);
+                    break;
+                case 2:
+                    rendimento = contaService.calcularRendimentoFuturoAteOFinalDoMes(cliente);
+                    System.out.printf("O rendimento até o final do mês será de R$ %.2f\n", rendimento);
+                    break;
+                case 3:
+                    while (true) {
+                        String qtdDias = validarEntradaPreenchida(input,
+                                "Digite quantos dias você deseja deixar o dinheiro rendendo na poupança",
+                                "Preencha com numeros a quantidade de dias que deseja simular");
+
+                        if (!FuncoesUtil.ehNumero(qtdDias)) {
+                            System.err.println("Digite apenas numeros");
+                            continue;
+                        }
+
+                        int days = Integer.parseInt(qtdDias);
+                        double rendimentoDiariaPrevisao = contaService.calcularRendimentoPoupancaProvisaoDias(cliente, days);
+                        System.out.printf("Após " + days + " dias sua conta terá rendido %.2f\n", rendimentoDiariaPrevisao);
+                        System.out.printf("Totalizando %.2f\n", cliente.getContaPoupanca().getSaldo() + rendimentoDiariaPrevisao);
+                        break;
+                    }
                     break;
                 case 9:
                     return;
-
             }
         }
 
-
-    }
-
-    private static double rendimentoFuturo(double saldoCliente, double rendimentoMensal, int days) {
-
-        LocalDate now = LocalDate.now();
-        LocalDate userDaySelect = now.plusDays(days);
-        LocalDate endMonth = now.withDayOfMonth(now.lengthOfMonth());
-        double saldoInicial = saldoCliente;
-
-
-        while (now.isBefore(userDaySelect)) {
-
-
-            if (now.equals(endMonth)) {
-
-                saldoCliente += rendimentoMensal;
-
-                endMonth = endMonth.plusMonths(1).withDayOfMonth(endMonth.lengthOfMonth());
-
-            }
-            now = now.plusDays(1);
-        }
-
-        double rendimentoFinal = saldoCliente + rendimentoMensal;
-
-        return rendimentoFinal - saldoInicial;
 
     }
 
 
     private static void contaCorrente(Scanner input, Cliente cliente) {
-        System.out.print("Saldo Atual: ");
-        System.out.printf("R$ %.2f%", (cliente.getContaCorrente().getSaldo()));
-        System.out.println("\n Categoria do cliente: " + cliente.getCategoria());
-        System.out.println("Taxa de manutenção: " + cliente.getContaCorrente().getTaxaManutencao());
+        while (true) {
+            System.out.println("Saldo Atual: ");
+            System.out.printf("R$ %.2f", (cliente.getContaCorrente().getSaldo()));
+            System.out.println("\nCategoria do cliente: " + cliente.getCategoria());
+            System.out.println("Taxa de manutenção: " + cliente.getContaCorrente().getTaxaManutencao());
+
+            System.out.println("(1) - Calcular Custo de Manutenção");
+            System.out.println("(9) - Sair");
+
+            String escolhaConta = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolhaConta)) {
+                System.err.println("Opção inválida, utilize somente os número mostrados no Menu!");
+                continue;
+            }
+
+            int escolhaContaInt = Integer.parseInt(escolhaConta);
+
+            switch (escolhaContaInt) {
+                case 1:
+                    double custoManutencao = contaService.calcularCustoContaCorrente(cliente);
+                    System.out.printf("Custo de manutenção até a data atual é de: %.2f\n", custoManutencao);
+                    System.out.printf("O custo de manutenção mensal é: %.2f\n", cliente.getContaCorrente().getTaxaManutencao());
+                    break;
+                case 9:
+                    return;
+            }
+
+        }
+
     }
 
 
@@ -289,7 +284,7 @@ public class Main {
         escolherCategoria(input, novoCliente);
         criarConta(input, novoCliente);
 
-        if(clienteService.clienteNovo(novoCliente) == null){
+        if (clienteService.clienteNovo(novoCliente) == null) {
             System.err.println("Erro! Cadastro não realizado");
             return;
         }
@@ -439,33 +434,33 @@ public class Main {
 
     private static void preencherSenha(Scanner input, Cliente novoCliente) {
 
-            String senha1;
-            do {
-                senha1 = validarEntradaPreenchida(input,
-                        "Crie uma senha com 4 números (ex:0000)",
-                        "Senha não preenchida");
-                if (!FuncoesUtil.validarSenha(senha1)) {
-                    System.err.println("Senha invalida! Crie uma senha de 4 digitos.");
-                   continue;
-                }
-                novoCliente.setSenhaCliente(senha1);
-                break;
+        String senha1;
+        do {
+            senha1 = validarEntradaPreenchida(input,
+                    "Crie uma senha com 4 números (ex:0000)",
+                    "Senha não preenchida");
+            if (!FuncoesUtil.validarSenha(senha1)) {
+                System.err.println("Senha invalida! Crie uma senha de 4 digitos.");
+                continue;
+            }
+            novoCliente.setSenhaCliente(senha1);
+            break;
 
-            } while (true);
+        } while (true);
 
-            do {
-                String senha2 = validarEntradaPreenchida(input,
-                        "Digite novamente a Senha para confirmação",
-                        "Senha não preenchida");
+        do {
+            String senha2 = validarEntradaPreenchida(input,
+                    "Digite novamente a Senha para confirmação",
+                    "Senha não preenchida");
 
-                if (!senha1.equals(senha2)) {
-                    System.err.println("Senha incorreta! Verifique a senha digitada.");
-                    continue;
-                }
-                novoCliente.setSenhaCliente(senha1);
-                break;
+            if (!senha1.equals(senha2)) {
+                System.err.println("Senha incorreta! Verifique a senha digitada.");
+                continue;
+            }
+            novoCliente.setSenhaCliente(senha1);
+            break;
 
-            } while (true);
+        } while (true);
     }
 
 
@@ -494,7 +489,7 @@ public class Main {
                 "Cidade não preenchida"));
 
         do {
-           String uf = validarEntradaPreenchida(input,
+            String uf = validarEntradaPreenchida(input,
                     "Digite o Estado em UF (ex:SP)",
                     "UF não preenchido");
             if (!FuncoesUtil.validarUF(uf)) {
@@ -578,12 +573,13 @@ public class Main {
     public static void operacaoBancaria(Scanner input, Cliente cliente) {
         //todo implementar transferencias {Raphaela}
         while (true) {
+
             System.out.println("\n=== TRANSFERÊNCIAS ===");
             System.out.println("(1) Transferência entre contas starbank");
             System.out.println("(2) PIX");
             System.out.println("(3) Consultar Extrato");
             System.out.println("(9) Voltar para o menu anterior");
-            System.out.print("Escolha a opção desejada: ");
+            System.out.println("Escolha a opção desejada: ");
 
             String transferenciaUsuario = input.nextLine();
             if (!FuncoesUtil.ehNumero(transferenciaUsuario)) {
@@ -621,7 +617,7 @@ public class Main {
             System.out.println("(1) Enviar PIX");
             System.out.println("(2) Receber PIX");
             System.out.println("(9) Voltar para menu anterior");
-            System.out.print("Escolha a opção desejada: ");
+            System.out.println("Escolha a opção desejada: ");
 
             String transferenciaPix = input.nextLine();
             if (!FuncoesUtil.ehNumero(transferenciaPix)) {
@@ -654,7 +650,7 @@ public class Main {
             System.out.println("(1) Atualização Cadastral ");
             System.out.println("(2) Alterar Categoria");
             System.out.println("(9) Voltar para o menu anterior");
-            System.out.print("Escolha a opção desejada: ");
+            System.out.println("Escolha a opção desejada: ");
 
             String PerfilUsuario = input.nextLine();
             if (!FuncoesUtil.ehNumero(PerfilUsuario)) {
@@ -693,7 +689,7 @@ public class Main {
             System.out.println("(3) Senha");
             System.out.println("(4) Endereço");
             System.out.println("(9) Voltar para o menu anterior");
-            System.out.print("Escolha a opção desejada: ");
+            System.out.println("Escolha a opção desejada: ");
 
             String AlterarUsuario = input.nextLine();
             if (!FuncoesUtil.ehNumero(AlterarUsuario)) {
@@ -714,7 +710,10 @@ public class Main {
                     //  data nascimento
                     break;
                 case 3:
-                    //todo alterar senha {Patrick}
+                    //
+                    //
+                    //
+                    // todo alterar senha {Patrick} Igor
                     break;
                 case 4:
                     System.out.println("Endereço.");
@@ -730,9 +729,44 @@ public class Main {
     }
 
     //menu para controle de cartao
-    public static void menuCartao(Scanner input, Cliente cliente) {
+    public static void menuEscolhaContaCartao(Scanner input, Cliente cliente) {
         while (true) {
 
+            System.out.println("Escolha a conta para administrar o cartão");
+
+            boolean temContaCorrente = cliente.getContaCorrente() != null;
+            boolean temContaPoupanca = cliente.getContaPoupanca() != null;
+
+            if (temContaPoupanca)
+                System.out.println("(1) Conta Poupança");
+
+            if (temContaCorrente)
+                System.out.println("(2) Conta Corrente");
+
+            System.out.println("(9) Voltar Para o Menu Anterior");
+
+            String escolherCartaoMenu = input.nextLine();
+            if (!FuncoesUtil.ehNumero(escolherCartaoMenu)) {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                continue;
+            }
+            int escolherConta = Integer.parseInt(escolherCartaoMenu);
+
+            if (temContaCorrente && escolherConta == 2) {
+                menuCartao(input, cliente, cliente.getContaCorrente());
+            } else if (temContaPoupanca && escolherConta == 1) {
+                menuCartao(input, cliente, cliente.getContaPoupanca());
+            } else if (escolherConta == 9) {
+                return;
+            } else {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+            }
+        }
+
+    }
+
+    private static void menuCartao(Scanner input, Cliente cliente, Conta conta) {
+        while (true) {
             System.out.println("\n== Meu Cartão ==");
             System.out.println("(1) Cartão de Debito");
             System.out.println("(2) Cartão de Crédito");
@@ -743,16 +777,16 @@ public class Main {
                 System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
                 continue;
             }
-            int escolherCartaoMenuInt = Integer.parseInt(escolherCartaoMenu);
+            int escolherConta = Integer.parseInt(escolherCartaoMenu);
 
-            switch (escolherCartaoMenuInt) {
+            switch (escolherConta) {
                 //cartao de debito
                 case 1:
-                    menuCartaoDebito(input);
+                    menuCartaoDebito(input, cliente, conta);
                     break;
                 //cartao de credito
                 case 2:
-                    menuCartaoCredito(input);
+                    menuCartaoCredito(input, cliente, conta);
                     break;
                 //Voltar menu
                 case 9:
@@ -760,16 +794,25 @@ public class Main {
 
             }
         }
-
     }
 
-    public static void menuCartaoDebito(Scanner input) {
+    public static void menuCartaoDebito(Scanner input, Cliente cliente, Conta conta) {
         while (true) {
             System.out.println("\n== Cartão de Debito ==");
             System.out.println("(1) Adquirir Cartão");
             System.out.println("(2) Alterar Limite Diário");
             System.out.println("(3) Cancelar Cartão");
             System.out.println("(9) Voltar Para o Menu Anterior");
+
+            for (int i = 0; i < conta.getCartaoDebito().size(); i++) {
+                Cartao c = conta.getCartaoDebito().get(i);
+                System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
+                        i,
+                        c.getNumeroCartao(), c.getTipoCartao().toString(),
+                        c.getCvvCartao(),
+                        c.getDataVencimento().format(DateTimeFormatter.ISO_DATE),
+                        c.getValorLimite(), c.getStatus());
+            }
 
             //todo listar todos os cartoes de debito(deve se listar todos os cartoes com seus status(ATIVADO, DESATIVADO))
             // criar funcionalidades de adquirir, alterar limite e cancelar cartão(no cancelar cartao, deve ser alterar o status para cancelado na enum dele) {Patrick}
@@ -784,12 +827,15 @@ public class Main {
             switch (escolherDebitoMenuInt) {
                 //adquirir cartao
                 case 1:
+                    adquirirCartaoDebito(cliente, conta);
                     break;
                 //Alterar limite diario
                 case 2:
+                    alterarLimiteDiario(input, cliente, conta);
                     break;
                 //cancelar cartao
                 case 3:
+                    cancelarCartaoDebito(input, conta);
                     break;
                 //Voltar menu
                 case 9:
@@ -799,103 +845,207 @@ public class Main {
         }
     }
 
-    public static void menuCartaoCredito(Scanner input) {
+    private static void cancelarCartaoDebito(Scanner input, Conta conta) {
         while (true) {
-            //todo para todas as operções exceto adquirir cartao, deve ser identificado
-            // o cartao que o usuario deseja fazer as operações {Patrick}
-            System.out.println("\n== Cartão de Crédito ==");
-            System.out.println("(1) Adquirir Cartão");
-            System.out.println("(2) Alterar Limite");
-            System.out.println("(3) Seguro Cartão");
-            System.out.println("(4) Cancelar Cartão");
-            System.out.println("(9) Voltar Para o Menu Anterior");
+            for (int i = 0; i < conta.getCartaoDebito().size(); i++) {
+                Cartao c = conta.getCartaoDebito().get(i);
 
-            //todo listar todos os cartoes de credito {Patrick}
+                if(c.getStatus() == CartaoStatus.CANCELADO)
+                    continue;
 
-            String escolherCreditoMenu = input.nextLine();
-            if (!FuncoesUtil.ehNumero(escolherCreditoMenu)) {
-                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
+                        i,
+                        c.getNumeroCartao(), c.getTipoCartao().toString(),
+                        c.getCvvCartao(),
+                        c.getDataVencimento().format(DateTimeFormatter.ISO_DATE),
+                        c.getValorLimite(), c.getStatus());
+            }
+
+            System.out.println("Escolha o cartao que deseja cancelar ou -1 para sair");
+            String cartaoEscolhido = input.nextLine();
+
+            if (!FuncoesUtil.ehNumero(cartaoEscolhido)) {
+                System.err.println("Error! Somente numero");
                 continue;
             }
-            int escolherCreditoMenuInt = Integer.parseInt(escolherCreditoMenu);
 
-            switch (escolherCreditoMenuInt) {
-                //adquirir cartao
-                case 1:
-                    break;
-                //alterar limite
-                case 2:
-                    break;
-                //menu de seguro do cartao
-                case 3:
-                    menuSeguro(input);
-                    break;
-                //cancelar cartao
-                case 4:
-                    break;
-                //Voltar menu
-                case 9:
-                    return;
+            int codigoCartao = Integer.parseInt(cartaoEscolhido);
 
-            }
-        }
-    }
+            if (codigoCartao == -1)
+                return;
 
-    public static void menuSeguro(Scanner input) {
-        while (true) {
-            System.out.println("\n== Meu Seguro ==");
-            System.out.println("(1) Adquirir Seguro");
-            System.out.println("(2) Consultar Seguros Adquiridos ");
-            System.out.println("(3) Cancelar Seguro ");
-            System.out.println("(9) Voltar Para o Menu Anterior");
-
-            String escolherSeguroMenu = input.nextLine();
-            if (!FuncoesUtil.ehNumero(escolherSeguroMenu)) {
-                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+            Cartao c;
+            try {
+                c = conta.getCartaoDebito().get(codigoCartao);
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("Código do cartão invalido");
                 continue;
             }
-            int escolherSeguroMenuInt = Integer.parseInt(escolherSeguroMenu);
 
-            switch (escolherSeguroMenuInt) {
-                //adquirir seguro
-                case 1:
-                    break;
-                //consultar seguro
-                case 2:
-                    break;
-                //cancelar seguro
-                case 3:
-                    break;
-                //Voltar menu
-                case 9:
-                    return;
-
+            if(!cartaoService.cancelarCartao(c)){
+                System.err.println("Falha ao cancelar o cartao");
+                continue;
             }
-
+            break;
         }
     }
 
-    public static void aberturaBanco() {
-        System.out.println("   d888888o.   8888888 8888888888         .8.          8 888888888o.  ");
-        System.out.println(" .`8888:' `88.       8 8888              .888.         8 8888    `88. ");
-        System.out.println(" 8.`8888.   Y8       8 8888             :88888.        8 8888     `88  ");
-        System.out.println(" `8.`8888.           8 8888            . `88888.       8 8888     ,88 ");
-        System.out.println("  `8.`8888.          8 8888           .8. `88888.      8 8888.   ,88' ");
-        System.out.println("   `8.`8888.         8 8888          .8`8. `88888.     8 888888888P'  ");
-        System.out.println("    `8.`8888.        8 8888         .8' `8. `88888.    8 8888`8b      ");
-        System.out.println("8b   `8.`8888.       8 8888        .8'   `8. `88888.   8 8888 `8b.    ");
-        System.out.println("`8b.  ;8.`8888       8 8888       .888888888. `88888.  8 8888   `8b.  ");
-        System.out.println(" `Y8888P ,88P'       8 8888      .8'       `8. `88888. 8 8888     `88.");
-        System.out.println(" 8 888888888o            .8.          b.             8 8 8888     ,88'  ");
-        System.out.println(" 8 8888    `88.         .888.         888o.          8 8 8888    ,88'   ");
-        System.out.println(" 8 8888     `88        :88888.        Y88888o.       8 8 8888   ,88'    ");
-        System.out.println(" 8 8888     ,88       . `88888.       .`Y888888o.    8 8 8888  ,88'     ");
-        System.out.println(" 8 8888.   ,88'      .8. `88888.      8o. `Y888888o. 8 8 8888 ,88'      ");
-        System.out.println(" 8 8888888888       .8`8. `88888.     8`Y8o. `Y88888o8 8 8888 88'       ");
-        System.out.println(" 8 8888    `88.    .8' `8. `88888.    8   `Y8o. `Y8888 8 888888<        ");
-        System.out.println(" 8 8888      88   .8'   `8. `88888.   8      `Y8o. `Y8 8 8888 `Y8.      ");
-        System.out.println(" 8 8888    ,88'  .888888888. `88888.  8         `Y8o.` 8 8888   `Y8.    ");
-        System.out.println(" 8 888888888P   .8'       `8. `88888. 8            `Yo 8 8888     `Y8.  ");
+    private static void alterarLimiteDiario(Scanner input, Cliente cliente, Conta conta) {
+        while (true) {
+            for (int i = 0; i < conta.getCartaoDebito().size(); i++) {
+                Cartao c = conta.getCartaoDebito().get(i);
+                System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
+                        i,
+                        c.getNumeroCartao(), c.getTipoCartao().toString(),
+                        c.getCvvCartao(),
+                        c.getDataVencimento().format(DateTimeFormatter.ISO_DATE),
+                        c.getValorLimite(), c.getStatus());
+            }
+
+            System.out.println("Escolha o cartao que deseja alterar o limite diario ou -1 para sair");
+            String cartaoEscolhido = input.nextLine();
+
+            if (!FuncoesUtil.ehNumero(cartaoEscolhido)) {
+                System.err.println("Error! Somente numero");
+                continue;
+            }
+
+            int codigoCartao = Integer.parseInt(cartaoEscolhido);
+
+            if (codigoCartao == -1)
+                return;
+
+            Cartao c;
+            try {
+                c = conta.getCartaoDebito().get(codigoCartao);
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("Código do cartão invalido");
+                continue;
+            }
+
+            while (true) {
+                System.out.println("Digite o novo valor de limite diario");
+                String limDiario = input.nextLine();
+
+                if (!FuncoesUtil.ehNumero(limDiario)) {
+                    System.err.println("Error! Somente numero");
+                    continue;
+                }
+
+                double novoLimite = Double.parseDouble(limDiario);
+
+                if (!cartaoService.alterarLimiteDiario(cliente, c, novoLimite)) {
+                    System.err.println("Valor de limite inválido com sua categoria");
+                    continue;
+                }
+                System.out.println("Limite alterado com sucesso");
+                break;
+            }
+        }
     }
-}
+
+        private static void adquirirCartaoDebito(Cliente cliente, Conta conta){
+            Cartao cartaoCriado = cartaoService.adquirirCartaoDebito(cliente, conta);
+            //TODO demonstrar os dados do cartao criado {Patrick}
+        }
+
+        public static void menuCartaoCredito (Scanner input, Cliente cliente, Conta conta){
+            while (true) {
+                //todo para todas as operções exceto adquirir cartao, deve ser identificado
+                // o cartao que o usuario deseja fazer as operações {Patrick}
+                System.out.println("\n== Cartão de Crédito ==");
+                System.out.println("(1) Adquirir Cartão");
+                System.out.println("(2) Alterar Limite");
+                System.out.println("(3) Seguro Cartão");
+                System.out.println("(4) Cancelar Cartão");
+                System.out.println("(9) Voltar Para o Menu Anterior");
+
+                //todo listar todos os cartoes de credito {Patrick}
+
+                String escolherCreditoMenu = input.nextLine();
+                if (!FuncoesUtil.ehNumero(escolherCreditoMenu)) {
+                    System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                    continue;
+                }
+                int escolherCreditoMenuInt = Integer.parseInt(escolherCreditoMenu);
+
+                switch (escolherCreditoMenuInt) {
+                    //adquirir cartao
+                    case 1:
+                        break;
+                    //alterar limite
+                    case 2:
+                        break;
+                    //menu de seguro do cartao
+                    case 3:
+                        menuSeguro(input);
+                        break;
+                    //cancelar cartao
+                    case 4:
+                        break;
+                    //Voltar menu
+                    case 9:
+                        return;
+
+                }
+            }
+        }
+
+        public static void menuSeguro (Scanner input){
+            while (true) {
+                System.out.println("\n== Meu Seguro ==");
+                System.out.println("(1) Adquirir Seguro");
+                System.out.println("(2) Consultar Seguros Adquiridos ");
+                System.out.println("(3) Cancelar Seguro ");
+                System.out.println("(9) Voltar Para o Menu Anterior");
+
+                String escolherSeguroMenu = input.nextLine();
+                if (!FuncoesUtil.ehNumero(escolherSeguroMenu)) {
+                    System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                    continue;
+                }
+                int escolherSeguroMenuInt = Integer.parseInt(escolherSeguroMenu);
+
+                switch (escolherSeguroMenuInt) {
+                    //adquirir seguro
+                    case 1:
+                        break;
+                    //consultar seguro
+                    case 2:
+                        break;
+                    //cancelar seguro
+                    case 3:
+                        break;
+                    //Voltar menu
+                    case 9:
+                        return;
+
+                }
+
+            }
+        }
+
+        public static void aberturaBanco () {
+            System.out.println("   d888888o.   8888888 8888888888         .8.          8 888888888o.  ");
+            System.out.println(" .`8888:' `88.       8 8888              .888.         8 8888    `88. ");
+            System.out.println(" 8.`8888.   Y8       8 8888             :88888.        8 8888     `88  ");
+            System.out.println(" `8.`8888.           8 8888            . `88888.       8 8888     ,88 ");
+            System.out.println("  `8.`8888.          8 8888           .8. `88888.      8 8888.   ,88' ");
+            System.out.println("   `8.`8888.         8 8888          .8`8. `88888.     8 888888888P'  ");
+            System.out.println("    `8.`8888.        8 8888         .8' `8. `88888.    8 8888`8b      ");
+            System.out.println("8b   `8.`8888.       8 8888        .8'   `8. `88888.   8 8888 `8b.    ");
+            System.out.println("`8b.  ;8.`8888       8 8888       .888888888. `88888.  8 8888   `8b.  ");
+            System.out.println(" `Y8888P ,88P'       8 8888      .8'       `8. `88888. 8 8888     `88.");
+            System.out.println(" 8 888888888o            .8.          b.             8 8 8888     ,88'  ");
+            System.out.println(" 8 8888    `88.         .888.         888o.          8 8 8888    ,88'   ");
+            System.out.println(" 8 8888     `88        :88888.        Y88888o.       8 8 8888   ,88'    ");
+            System.out.println(" 8 8888     ,88       . `88888.       .`Y888888o.    8 8 8888  ,88'     ");
+            System.out.println(" 8 8888.   ,88'      .8. `88888.      8o. `Y888888o. 8 8 8888 ,88'      ");
+            System.out.println(" 8 8888888888       .8`8. `88888.     8`Y8o. `Y88888o8 8 8888 88'       ");
+            System.out.println(" 8 8888    `88.    .8' `8. `88888.    8   `Y8o. `Y8888 8 888888<        ");
+            System.out.println(" 8 8888      88   .8'   `8. `88888.   8      `Y8o. `Y8 8 8888 `Y8.      ");
+            System.out.println(" 8 8888    ,88'  .888888888. `88888.  8         `Y8o.` 8 8888   `Y8.    ");
+            System.out.println(" 8 888888888P   .8'       `8. `88888. 8            `Yo 8 8888     `Y8.  ");
+        }
+    }
 
