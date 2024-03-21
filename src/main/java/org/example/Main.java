@@ -267,9 +267,6 @@ public class Main {
         } while (true);
 
 
-        //todo aplicar regex no nome do cliente, deve ter mais de duas letras e no maximo 100 letrase nao pode conter numero {Willians}
-
-
         do {
             String nomeCliente = validarEntradaPreenchida(input,
                     "Digite o Nome Completo",

@@ -26,7 +26,7 @@ public class FuncoesUtil {
 
     //todo criar as funções staticas de validacao de regex aqui nessa classe, vulgo exemplo acima {Willians}
     public static boolean validarNomeCliente(String nome) {
-        String padrao = "^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ 1]{2,100}$";
+        String padrao = "^[A-Za-záàâãéèêíïóôõöúçñÁÀÂÃÉÈÍÏÓÔÕÖÚÇÑ ]{2,100}$";
 
         Pattern pattern = Pattern.compile(padrao);
         Matcher matcher = pattern.matcher(nome);
