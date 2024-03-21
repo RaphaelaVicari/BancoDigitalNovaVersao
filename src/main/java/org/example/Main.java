@@ -178,7 +178,7 @@ public class Main {
 
         double saldoCliente = cliente.getContaPoupanca().getSaldo();
         double rendimentoMensal = (saldoCliente * cliente.getContaPoupanca().getTaxaRendimento());
-        double rendimentoDiario = rendimentoMensal / daysToEndMonthInt;
+        //double rendimentoDiario = rendimentoMensal / daysToEndMonthInt;
 
 
         if (now.equals(endMonth)) {
@@ -198,8 +198,11 @@ public class Main {
 
             switch (escolhaPoupancaInt) {
                 case 1:
+                    System.out.println("Digite quantos dias você deseja deixar o dinheiro rendendo na poupança");
                     int days = input.nextInt();
-                    rendimentoFuturo(saldoCliente, rendimentoMensal, days);
+                    double rendimentoDiariaPrevisao = rendimentoFuturo(saldoCliente, rendimentoMensal, days) / days;
+                    System.out.println("Após " + days + "sua conta terá rendido " + rendimentoDiariaPrevisao + "por dia");
+                    System.out.println("Totalizando "+(rendimentoFuturo(saldoCliente, rendimentoMensal, days)+saldoCliente));
                     break;
                 case 9:
                     return;
