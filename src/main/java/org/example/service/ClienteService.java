@@ -76,6 +76,13 @@ public class ClienteService {
             return cadastroSenha(scanner, senha, senhaConfirm);
         }
     }
+    public void clientPasswordUpdate(Cliente cliente, String newPassword)
+    {
+       cliente.setSenhaCliente(PasswordSecurity.encriptarSenha(newPassword));
+       clienteRepository.atualizarBaseDados();
+    }
+
+
 
     public boolean cpfJaCadastrado(String cpf) {
 
@@ -100,6 +107,10 @@ public class ClienteService {
         return PasswordSecurity.checkSenha(senha, cliente.getSenhaCliente());
 
     }
+
+
+
+
 }
 
 

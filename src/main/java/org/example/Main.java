@@ -78,7 +78,7 @@ public class Main {
 
             if (cliente.getContaCorrente() != null) {
                 mostrarDadosConta(cliente.getContaCorrente());
-                System.out.printf("TAXA DE MANUNTENÇÃO: R$ %.2f\n\n",cliente.getContaCorrente().getTaxaManutencao());
+                System.out.printf("TAXA DE MANUNTENÇÃO: R$ %.2f\n\n", cliente.getContaCorrente().getTaxaManutencao());
             }
 
             if (cliente.getContaPoupanca() != null) {
@@ -126,9 +126,9 @@ public class Main {
         System.out.println("AGENCIA: " + conta.getNumeroAgencia());
         System.out.println("CONTA: " + conta.getNumeroConta() + " DIGITO: " + conta.getDigitoConta());
         System.out.println("SALDO: " + conta.getSaldo());
-}
+    }
 
-private static void menuContas(Scanner input, Cliente cliente) {
+    private static void menuContas(Scanner input, Cliente cliente) {
 
         while (true) {
             System.out.println("(1) Conta Corrente");
@@ -156,7 +156,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
     }
 
     private static void contaPoupanca(Scanner input, Cliente cliente) {
-
+    //TODO corrigir bug sobre consulta de conta inexistente
         while (true) {
             System.out.println("--- Conta Poupança ---\n");
             System.out.println("Saldo Atual: ");
@@ -463,7 +463,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
                     "Crie uma senha com 4 números (ex:0000)",
                     "Senha não preenchida");
             if (!FuncoesUtil.validarSenha(senha1)) {
-                System.err.println("Senha invalida! Crie uma senha númerica de 4 digitos.");
+                System.err.println("Senha invalida! Crie uma senha numérica de 4 digitos.");
                 continue;
             }
             novoCliente.setSenhaCliente(senha1);
@@ -631,7 +631,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
     }
 
     private static void criarDeposito(Scanner input, Cliente cliente) {
-        while(true){
+        while (true) {
 
             System.out.println("Digite o valor a ser depositado em sua conta");
             String valorDeposito = input.nextLine();
@@ -643,7 +643,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
             double valor = Double.parseDouble(valorDeposito);
 
-            if(valor <= 0){
+            if (valor <= 0) {
                 System.err.println("Valor nao pode ser negativo e nem zero");
                 continue;
             }
@@ -659,14 +659,14 @@ private static void menuContas(Scanner input, Cliente cliente) {
     }
 
     private static void mostrarExtrato(Cliente cliente) {
-        if(cliente.getContaCorrente() != null) {
+        if (cliente.getContaCorrente() != null) {
             System.out.println("EXTRATO CONTA CORRENTE");
             mostrarExtratoConta(cliente.getContaCorrente());
         }
 
         System.out.print("\n\n");
 
-        if(cliente.getContaPoupanca() != null) {
+        if (cliente.getContaPoupanca() != null) {
             System.out.println("EXTRATO CONTA POUPANÇA");
             mostrarExtratoConta(cliente.getContaPoupanca());
         }
@@ -674,27 +674,27 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
     private static void mostrarExtratoConta(Conta conta) {
 
-        for(Transferencia i: conta.getTransferencias()){
-            System.out.println("DATA:"+i.getDataTransferencia().toString().substring(0, 19));
+        for (Transferencia i : conta.getTransferencias()) {
+            System.out.println("DATA:" + i.getDataTransferencia().toString().substring(0, 19));
             System.out.println(i.getTipoTransferencia());
 
             System.out.println("\nORIGEM");
 
-            System.out.println("NOME ORIGEM:"+i.getContaOrigem().getNome());
-            System.out.println("CPF ORIGEM:"+i.getContaOrigem().getCpfCliente());
-            System.out.println("AGENCIA ORIGEM:"+i.getContaOrigem().getNumeroAgencia());
-            System.out.println("CONTA ORIGEM:"+i.getContaOrigem().getNumeroConta());
-            System.out.println("DIGITO ORIGEM:"+i.getContaOrigem().getNumeroDigito());
-            System.out.println("TIPO CONTA ORIGEM:"+i.getContaOrigem().getTipoConta());
+            System.out.println("NOME ORIGEM:" + i.getContaOrigem().getNome());
+            System.out.println("CPF ORIGEM:" + i.getContaOrigem().getCpfCliente());
+            System.out.println("AGENCIA ORIGEM:" + i.getContaOrigem().getNumeroAgencia());
+            System.out.println("CONTA ORIGEM:" + i.getContaOrigem().getNumeroConta());
+            System.out.println("DIGITO ORIGEM:" + i.getContaOrigem().getNumeroDigito());
+            System.out.println("TIPO CONTA ORIGEM:" + i.getContaOrigem().getTipoConta());
 
             System.out.println("\nDESTINO");
 
-            System.out.println("NOME DESTINO:"+i.getContaDestino().getNome());
-            System.out.println("CPF DESTINO:"+i.getContaDestino().getCpfCliente());
-            System.out.println("AGENCIA DESTINO:"+i.getContaDestino().getNumeroAgencia());
-            System.out.println("CONTA DESTINO:"+i.getContaDestino().getNumeroConta());
-            System.out.println("DIGITO DESTINO:"+i.getContaDestino().getNumeroDigito());
-            System.out.println("TIPO CONTA DESTINO:"+i.getContaDestino().getTipoConta());
+            System.out.println("NOME DESTINO:" + i.getContaDestino().getNome());
+            System.out.println("CPF DESTINO:" + i.getContaDestino().getCpfCliente());
+            System.out.println("AGENCIA DESTINO:" + i.getContaDestino().getNumeroAgencia());
+            System.out.println("CONTA DESTINO:" + i.getContaDestino().getNumeroConta());
+            System.out.println("DIGITO DESTINO:" + i.getContaDestino().getNumeroDigito());
+            System.out.println("TIPO CONTA DESTINO:" + i.getContaDestino().getTipoConta());
 
             System.out.println();
 
@@ -705,16 +705,16 @@ private static void menuContas(Scanner input, Cliente cliente) {
     }
 
     private static void transferenciaPIX(Scanner input, Cliente cliente) {
-        while(true) {
+        while (true) {
 
             Conta contaDestino = null;
             Cliente clienteDest = null;
 
-            while(true) {
+            while (true) {
                 String cpfCliente = validarEntradaPreenchida(input, "Digite o CPF do cliente que deseja realizar o PIX (ex:000.000.000-00)\nPara sair digite: -1",
                         "CPF vazio, preencha o CPF");
 
-                if(cpfCliente.trim().equals("-1")){
+                if (cpfCliente.trim().equals("-1")) {
                     return;
                 }
 
@@ -728,14 +728,14 @@ private static void menuContas(Scanner input, Cliente cliente) {
                     continue;
                 }
 
-                 clienteDest = clienteService.consultarClientePorCpf(cpfCliente);
+                clienteDest = clienteService.consultarClientePorCpf(cpfCliente);
 
-                if(clienteDest == null) {
+                if (clienteDest == null) {
                     System.err.println("Cliente não está cadastrado no banco");
                     continue;
                 }
 
-                if(clienteDest.getCpfCliente().equals(cliente.getCpfCliente())){
+                if (clienteDest.getCpfCliente().equals(cliente.getCpfCliente())) {
                     System.err.println("Não é permitido fazer PIX para si mesmo");
                     continue;
                 }
@@ -745,20 +745,20 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
                 System.out.println("Destinatario");
                 System.out.println("NOME:" + clienteDest.getNomeCliente());
-                System.out.println("CPF:"+ clienteDest.getCpfCliente());
+                System.out.println("CPF:" + clienteDest.getCpfCliente());
 
                 mostrarInformacoesDisponivel(clienteDest, temContaC, temContaP);
 
                 contaDestino = escolherContaDestino(input, temContaC, temContaP, clienteDest);
 
-                if(contaDestino == null){
+                if (contaDestino == null) {
                     continue;
                 }
 
                 break;
             }
 
-            while(true) {
+            while (true) {
                 System.out.println("Saldo Disponivel em conta:");
 
                 boolean temContaCorrente = cliente.getContaCorrente() != null;
@@ -782,19 +782,19 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
                 int opcao = Integer.parseInt(opcaoConta);
 
-                if(opcao == -1){
+                if (opcao == -1) {
                     break;
                 }
 
                 if (opcao == 1 && temContaCorrente) {
-                    if(!realizarTransferencia(input, cliente, clienteDest, contaDestino, cliente.getContaCorrente())){
+                    if (!realizarTransferencia(input, cliente, clienteDest, contaDestino, cliente.getContaCorrente())) {
                         System.err.println("Erro ao realizar PIX");
                         break;
                     }
                     System.out.println("PIX Realizado com Sucesso");
                     return;
                 } else if (opcao == 2 && temContaPoupanca) {
-                    if(!realizarTransferencia(input, cliente, clienteDest, contaDestino, cliente.getContaPoupanca())){
+                    if (!realizarTransferencia(input, cliente, clienteDest, contaDestino, cliente.getContaPoupanca())) {
                         System.err.println("Erro ao realizar PIX");
                         break;
                     }
@@ -809,22 +809,22 @@ private static void menuContas(Scanner input, Cliente cliente) {
     }
 
     private static void mostrarInformacoesDisponivel(Cliente cliente, boolean temContaC, boolean temContaP) {
-        if(temContaC) {
-            System.out.println("\nAgência:"+ cliente.getContaCorrente().getNumeroAgencia());
+        if (temContaC) {
+            System.out.println("\nAgência:" + cliente.getContaCorrente().getNumeroAgencia());
             System.out.println("Conta Corrente:" + cliente.getContaCorrente().getNumeroConta());
-            System.out.println("Digito:"+ cliente.getContaCorrente().getDigitoConta());
+            System.out.println("Digito:" + cliente.getContaCorrente().getDigitoConta());
         }
 
-        if(temContaP) {
-            System.out.println("\nAgência:"+ cliente.getContaPoupanca().getNumeroAgencia());
+        if (temContaP) {
+            System.out.println("\nAgência:" + cliente.getContaPoupanca().getNumeroAgencia());
             System.out.println("Conta Poupança:" + cliente.getContaPoupanca().getNumeroConta());
-            System.out.println("Digito:"+ cliente.getContaPoupanca().getDigitoConta());
+            System.out.println("Digito:" + cliente.getContaPoupanca().getDigitoConta());
         }
     }
 
     private static boolean realizarTransferencia(Scanner input, Cliente cliente, Cliente clienteDest, Conta contaDestino, Conta contaOrigem) {
 
-        while(true) {
+        while (true) {
             String valorTransf = validarEntradaPreenchida(input, "Digite o valor que deseja transferir utilizando ponto (ex:1.50)\nPara sair digite: -1",
                     "O valor precisa ser preenchido");
 
@@ -835,16 +835,16 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
             double valor = Double.parseDouble(valorTransf);
 
-            if(valor == -1){
+            if (valor == -1) {
                 return false;
             }
 
-            if(valor <= 0){
+            if (valor <= 0) {
                 System.err.println("É necessario que o valor da PIX seja maior que zero");
                 continue;
             }
 
-            if(valor > contaOrigem.getSaldo()){
+            if (valor > contaOrigem.getSaldo()) {
                 System.err.println("O valor da insuficiente para completar a transação");
                 continue;
             }
@@ -855,7 +855,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
     }
 
     private static Conta escolherContaDestino(Scanner input, boolean temContaC, boolean temContaP, Cliente clienteDest) {
-        while(true) {
+        while (true) {
             System.out.println("Escolha a conta de destino:");
             System.out.println("-1 para cancelar e buscar outro destinatario");
 
@@ -878,15 +878,15 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
             int opcao = Integer.parseInt(opConta);
 
-            if(opcao == -1){
+            if (opcao == -1) {
                 return null;
             }
 
-            if(temContaC && opcao == 1){
+            if (temContaC && opcao == 1) {
                 return clienteDest.getContaCorrente();
-            } else if(temContaP && opcao == 2){
+            } else if (temContaP && opcao == 2) {
                 return clienteDest.getContaPoupanca();
-            }else {
+            } else {
                 System.err.println("Digite uma opção valida");
             }
 
@@ -957,9 +957,9 @@ private static void menuContas(Scanner input, Cliente cliente) {
     private static void alterarCategoriaConta(Scanner input, Cliente cliente) {
         escolherCategoria(input, cliente);
 
-        if(cliente.getContaPoupanca() != null)
+        if (cliente.getContaPoupanca() != null)
             definirRendimentoPoupanca(cliente, cliente.getContaPoupanca());
-        if(cliente.getContaCorrente() != null)
+        if (cliente.getContaCorrente() != null)
             definirTaxaManutencao(cliente, cliente.getContaCorrente());
 
         clienteService.atualizarCliente(cliente);
@@ -978,7 +978,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
             String AlterarUsuario = input.nextLine();
             if (!FuncoesUtil.ehNumero(AlterarUsuario)) {
-                System.err.println("Opção inválida, utilize somente os número mostrados no Menu!");
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
                 continue;
             }
             int alterar = Integer.parseInt(AlterarUsuario);
@@ -995,22 +995,75 @@ private static void menuContas(Scanner input, Cliente cliente) {
                     //  data nascimento
                     break;
                 case 3:
-                    //
-                    //
-                    //
                     // todo alterar senha {Patrick} Igor
+                    System.out.println("Deseja alterar sua senha?");
+                    clienteUpdateSenhaMenu(input, cliente);
                     break;
+
                 case 4:
                     System.out.println("Endereço.");
                     // endereço
                     break;
                 case 9:
-                    //   usuarioLogado(input);
+
                     return;
                 default:
                     System.out.println("Opção inválida. Por favor, escolha uma opção válida.");
             }
         }
+    }
+
+    private static void clienteUpdateSenhaMenu(Scanner input, Cliente cliente) {
+        while (true) {
+            System.out.println("(1) Prosseguir com alteração da senha");
+            System.out.println("(2) Cancelar Operação");
+            String alterarSenha = input.nextLine();
+            if (!FuncoesUtil.ehNumero(alterarSenha)) {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                continue;
+            }
+            int alterarSenhaInt = Integer.parseInt(alterarSenha);
+            switch (alterarSenhaInt) {
+                case 1:
+                    clientPasswordUpdate(input, cliente);
+                    return;
+                case 2:
+                    return;
+                default:
+                    System.err.println("Opção inválida. Escolha apenas as opções disponíveis");
+
+            }
+
+        }
+    }
+
+    private static void clientPasswordUpdate(Scanner input, Cliente cliente) {
+        System.out.println("Digite sua senha atual");
+        String senhaAtual = input.nextLine();
+        while (true) {
+               if (!clienteService.checkSenha(cliente, senhaAtual)) {
+                System.out.println("Senha Incorreta! - 1 Tentativa restante");
+                System.out.println("Digite sua senha atual");
+                senhaAtual = input.nextLine();
+                if (!clienteService.checkSenha(cliente, senhaAtual)) {
+                    System.out.println("Senha Incorreta!");
+                    System.out.println("Operação cancelada.");
+                    return;
+                }
+
+            }
+            else
+            {
+                preencherSenha(input,cliente);
+                String novaSenha = cliente.getSenhaCliente();
+                clienteService.clientPasswordUpdate(cliente,novaSenha);
+                System.out.println("Senha Alterada com Sucesso!");
+                return;
+            }
+
+
+        }
+
     }
 
     //menu para controle de cartao
@@ -1244,7 +1297,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
     private static void adquirirCartaoDebito(Scanner input, Cliente cliente, Conta conta) {
         Cartao cartaoCriado = cartaoService.adquirirCartaoDebito(cliente, conta);
 
-        if(cartaoCriado == null) {
+        if (cartaoCriado == null) {
             System.err.println("Erro ao criar cartão de débito, tente novamente mais tarde");
             return;
         }
@@ -1256,7 +1309,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
     }
 
     private static Seguro escolherSeguroViagemParaCartao(Scanner input, Cliente cliente, Cartao cartaoCriado) {
-        while(true) {
+        while (true) {
 
             String escolhaSeguro = validarEntradaPreenchida(input, "Deseja adicionar o seguro viagem ? Taxa de apenas R$ 50,00\nResponda 1 para SIM\nResponda 2 para NÃO",
                     "Precisa ser preenchido a resposta do seguro");
@@ -1267,7 +1320,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
             int escolha = Integer.parseInt(escolhaSeguro);
 
-            switch(escolha){
+            switch (escolha) {
                 case 1:
                     return seguroService.criarSeguroViagemCobrado(cliente, cartaoCriado);
                 case 2:
@@ -1293,7 +1346,6 @@ private static void menuContas(Scanner input, Cliente cliente) {
             System.out.println("(9) Voltar Para o Menu Anterior");
 
 
-
             String escolherCreditoMenu = input.nextLine();
             if (!FuncoesUtil.ehNumero(escolherCreditoMenu)) {
                 System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
@@ -1308,9 +1360,9 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
                     Seguro seguroViagem;
 
-                    if(cliente.getCategoria() == CategoriaEnum.PREMIUM){
+                    if (cliente.getCategoria() == CategoriaEnum.PREMIUM) {
                         seguroViagem = seguroService.criarSeguroViagemSemCobranca(cliente, cartaoCriado);
-                    }else {
+                    } else {
                         seguroViagem = escolherSeguroViagemParaCartao(input, cliente, cartaoCriado);
                     }
 
