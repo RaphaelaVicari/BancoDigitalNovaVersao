@@ -102,6 +102,25 @@ public class ClienteService {
         return clienteRepository.consultarClientePorCpf(cpfUtil.getCPF(true));
     }
 
+    public Cliente alterarDadosCliente(Cliente clienteAtualizado) {
+
+        Cliente clienteExistente = clienteRepository.consultarClientePorCpf(clienteAtualizado.getCpfCliente());
+
+        if (clienteExistente != null) {
+            clienteExistente.setNomeCliente(clienteAtualizado.getNomeCliente());
+            clienteExistente.setDataNascimentoCliente(clienteAtualizado.getDataNascimentoCliente());
+            clienteExistente.setEndereco(clienteAtualizado.getEndereco());
+
+            clienteRepository.atualizarBaseDados();
+
+            return clienteExistente;
+        } else {
+            System.err.println("Cliente não encontrado para atualização.");
+            return null;
+        }
+    }
+
+
     public boolean checkSenha(Cliente cliente, String senha) {
 
         return PasswordSecurity.checkSenha(senha, cliente.getSenhaCliente());

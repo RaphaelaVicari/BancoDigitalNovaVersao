@@ -971,8 +971,8 @@ public class Main {
             System.out.println("\n== Perfil ==");
             System.out.println("(1) Nome de preferência");
             System.out.println("(2) Data de nascimento");
-            System.out.println("(3) Senha");
-            System.out.println("(4) Endereço");
+            System.out.println("(3) Endereço");
+            System.out.println("(4) Senha");
             System.out.println("(9) Voltar para o menu anterior");
             System.out.println("Escolha a opção desejada: ");
 
@@ -987,22 +987,38 @@ public class Main {
 
             switch (alterar) {
                 case 1:
-                    System.out.println("== Nome ==");
-                    //  nome
+
+                    do {
+                        String novoNome = validarEntradaPreenchida(input,
+                                "Digite o nome desejado",
+                                "Nome não preenchido");
+                        if (!FuncoesUtil.validarNomeCliente(novoNome)) {
+                            System.err.println("Nome inválido! O nome deve conter somente letras, com no mínimo 2 e no máximo 100 caracteres.");
+                            continue;
+                        }
+                        cliente.setNomeCliente(novoNome);
+                        clienteService.alterarDadosCliente(cliente);
+                        System.out.println("Nome alterado com sucesso!");
+                        break;
+                    } while (true);
+
                     break;
                 case 2:
-                    System.out.println("== Data de nascimento ==");
-                    //  data nascimento
+
+                    preencherDataNascimento(input, cliente);
+                    clienteService.alterarDadosCliente(cliente);
+                    System.out.println("Data de nascimento alterado com sucesso!");
                     break;
+
                 case 3:
-                    // todo alterar senha {Patrick} Igor
-                    System.out.println("Deseja alterar sua senha?");
-                    clienteUpdateSenhaMenu(input, cliente);
+                    preencherEndereco(input, cliente);
+                    clienteService.alterarDadosCliente(cliente);
+                    System.out.println("Endereço alterado com sucesso!");
                     break;
 
                 case 4:
-                    System.out.println("Endereço.");
-                    // endereço
+                    System.out.println("Deseja alterar sua senha?");
+                    clienteUpdateSenhaMenu(input, cliente);
                     break;
                 case 9:
 
