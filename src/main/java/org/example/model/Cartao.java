@@ -24,6 +24,8 @@ public class Cartao {
 
     private CartaoStatus status;
 
+    private Double limitUtilizado;
+
     public Cartao() {
         this.seguros = new ArrayList<>();
         this.pagamentos = new ArrayList<>();
@@ -112,5 +114,16 @@ public class Cartao {
                 '}';
     }
 
+    public Double getLimitUtilizado() {
+        return limitUtilizado;
+    }
+
+    public void setLimitUtilizado(Double limitUtilizado) {
+        this.limitUtilizado = limitUtilizado;
+    }
+
+    public boolean adicionarSeguro(Seguro seguro) {
+        return seguros.add(seguro);
+    }
 }
 

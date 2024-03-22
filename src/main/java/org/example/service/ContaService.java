@@ -7,6 +7,12 @@ import java.time.temporal.ChronoUnit;
 
 public class ContaService {
 
+    private final ClienteService clienteRepository;
+
+    public ContaService(ClienteService clienteRepository) {
+        this.clienteRepository = clienteRepository;
+    }
+
     public double calcularRendimentoFuturoAteOFinalDoMes(Cliente cliente) {
         LocalDate now = LocalDate.now();
         LocalDate endMonth = now.withDayOfMonth(now.lengthOfMonth());

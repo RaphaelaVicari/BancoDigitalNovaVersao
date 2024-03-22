@@ -2,15 +2,12 @@ package org.example;
 
 import org.example.model.*;
 import org.example.repository.ClienteRepository;
-import org.example.service.CartaoService;
-import org.example.service.ClienteService;
-import org.example.service.ContaService;
-import org.example.service.TransferenciaService;
+import org.example.service.*;
 import org.example.util.FuncoesUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
 
@@ -18,9 +15,11 @@ public class Main {
 
     static ClienteRepository clienteRepository = new ClienteRepository();
     static ClienteService clienteService = new ClienteService(clienteRepository);
-    static TransferenciaService transferenciaService = new TransferenciaService(clienteRepository);
-    static ContaService contaService = new ContaService();
-    static CartaoService cartaoService = new CartaoService();
+    static TransferenciaService transferenciaService = new TransferenciaService(clienteService);
+    static ContaService contaService = new ContaService(clienteService);
+    static CartaoService cartaoService = new CartaoService(clienteService);
+
+    static SeguroService seguroService = new SeguroService(clienteService);
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
@@ -1084,21 +1083,15 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
     public static void menuCartaoDebito(Scanner input, Cliente cliente, Conta conta) {
         while (true) {
+            listarCartao(conta.getCartaoDebito());
+
             System.out.println("\n== Cartão de Debito ==");
             System.out.println("(1) Adquirir Cartão");
             System.out.println("(2) Alterar Limite Diário");
             System.out.println("(3) Cancelar Cartão");
             System.out.println("(9) Voltar Para o Menu Anterior");
 
-            for (int i = 0; i < conta.getCartaoDebito().size(); i++) {
-                Cartao c = conta.getCartaoDebito().get(i);
-                System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
-                        i,
-                        c.getNumeroCartao(), c.getTipoCartao().toString(),
-                        c.getCvvCartao(),
-                        c.getDataVencimento().format(DateTimeFormatter.ISO_DATE),
-                        c.getValorLimite(), c.getStatus());
-            }
+            System.out.print("");
 
             //todo listar todos os cartoes de debito(deve se listar todos os cartoes com seus status(ATIVADO, DESATIVADO))
             // criar funcionalidades de adquirir, alterar limite e cancelar cartão(no cancelar cartao, deve ser alterar o status para cancelado na enum dele) {Patrick}
@@ -1113,15 +1106,15 @@ private static void menuContas(Scanner input, Cliente cliente) {
             switch (escolherDebitoMenuInt) {
                 //adquirir cartao
                 case 1:
-                    adquirirCartaoDebito(cliente, conta);
+                    adquirirCartaoDebito(input, cliente, conta);
                     break;
                 //Alterar limite diario
                 case 2:
-                    alterarLimiteDiario(input, cliente, conta);
+                    alterarLimiteDiario(input, cliente, conta, conta.getCartaoDebito());
                     break;
                 //cancelar cartao
                 case 3:
-                    cancelarCartaoDebito(input, conta);
+                    cancelarCartaoDebito(input, cliente, conta, conta.getCartaoDebito());
                     break;
                 //Voltar menu
                 case 9:
@@ -1131,9 +1124,24 @@ private static void menuContas(Scanner input, Cliente cliente) {
         }
     }
 
-    private static void cancelarCartaoDebito(Scanner input, Conta conta) {
+    private static void listarCartao(List<Cartao> cartao) {
+        for (int i = 0; i < cartao.size(); i++) {
+            Cartao c = cartao.get(i);
+            System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
+                    i,
+                    c.getNumeroCartao(), c.getTipoCartao().toString(),
+                    c.getCvvCartao(),
+                    c.getDataVencimento().format(DateTimeFormatter.ISO_DATE),
+                    c.getValorLimite(), c.getStatus());
+        }
+    }
+
+    private static void cancelarCartaoDebito(Scanner input,
+                                             Cliente cliente,
+                                             Conta conta,
+                                             List<Cartao> cartao) {
         while (true) {
-            for (int i = 0; i < conta.getCartaoDebito().size(); i++) {
+            for (int i = 0; i < cartao.size(); i++) {
                 Cartao c = conta.getCartaoDebito().get(i);
 
                 if (c.getStatus() == CartaoStatus.CANCELADO)
@@ -1162,13 +1170,13 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
             Cartao c;
             try {
-                c = conta.getCartaoDebito().get(codigoCartao);
+                c = cartao.get(codigoCartao);
             } catch (IndexOutOfBoundsException e) {
                 System.err.println("Código do cartão invalido");
                 continue;
             }
 
-            if (!cartaoService.cancelarCartao(c)) {
+            if (!cartaoService.cancelarCartao(cliente, c)) {
                 System.err.println("Falha ao cancelar o cartao");
                 continue;
             }
@@ -1176,10 +1184,13 @@ private static void menuContas(Scanner input, Cliente cliente) {
         }
     }
 
-    private static void alterarLimiteDiario(Scanner input, Cliente cliente, Conta conta) {
+    private static void alterarLimiteDiario(Scanner input,
+                                            Cliente cliente,
+                                            Conta conta,
+                                            List<Cartao> cartao) {
         while (true) {
-            for (int i = 0; i < conta.getCartaoDebito().size(); i++) {
-                Cartao c = conta.getCartaoDebito().get(i);
+            for (int i = 0; i < cartao.size(); i++) {
+                Cartao c = cartao.get(i);
                 System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
                         i,
                         c.getNumeroCartao(), c.getTipoCartao().toString(),
@@ -1203,7 +1214,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
 
             Cartao c;
             try {
-                c = conta.getCartaoDebito().get(codigoCartao);
+                c = cartao.get(codigoCartao);
             } catch (IndexOutOfBoundsException e) {
                 System.err.println("Código do cartão invalido");
                 continue;
@@ -1230,17 +1241,50 @@ private static void menuContas(Scanner input, Cliente cliente) {
         }
     }
 
-    private static void adquirirCartaoDebito(Cliente cliente, Conta conta) {
+    private static void adquirirCartaoDebito(Scanner input, Cliente cliente, Conta conta) {
         Cartao cartaoCriado = cartaoService.adquirirCartaoDebito(cliente, conta);
+
+        if(cartaoCriado == null) {
+            System.err.println("Erro ao criar cartão de débito, tente novamente mais tarde");
+            return;
+        }
+
         System.out.println("Segue as informações de seu novo cartão:");
         System.out.println(cartaoCriado);
-        //TODO demonstrar os dados do cartao criado {Patrick}
+
+        //TODO demonstrar os dados do cartao criado {Raphaela}
+    }
+
+    private static Seguro escolherSeguroViagemParaCartao(Scanner input, Cliente cliente, Cartao cartaoCriado) {
+        while(true) {
+
+            String escolhaSeguro = validarEntradaPreenchida(input, "Deseja adicionar o seguro viagem ? Taxa de apenas R$ 50,00\nResponda 1 para SIM\nResponda 2 para NÃO",
+                    "Precisa ser preenchido a resposta do seguro");
+            if (!FuncoesUtil.ehNumero(escolhaSeguro)) {
+                System.err.println("Opção inválida, digite apenas numeros!");
+                continue;
+            }
+
+            int escolha = Integer.parseInt(escolhaSeguro);
+
+            switch(escolha){
+                case 1:
+                    return seguroService.criarSeguroViagemCobrado(cliente, cartaoCriado);
+                case 2:
+                    return null;
+                default:
+                    System.err.println("Opção invalida, digite apenas 1 ou 2");
+            }
+
+        }
     }
 
     public static void menuCartaoCredito(Scanner input, Cliente cliente, Conta conta) {
         while (true) {
             //todo para todas as operções exceto adquirir cartao, deve ser identificado
             // o cartao que o usuario deseja fazer as operações {Patrick}
+            listarCartao(conta.getCartaoCredito());
+
             System.out.println("\n== Cartão de Crédito ==");
             System.out.println("(1) Adquirir Cartão");
             System.out.println("(2) Alterar Limite");
@@ -1248,7 +1292,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
             System.out.println("(4) Cancelar Cartão");
             System.out.println("(9) Voltar Para o Menu Anterior");
 
-            //todo listar todos os cartoes de credito {Patrick}
+
 
             String escolherCreditoMenu = input.nextLine();
             if (!FuncoesUtil.ehNumero(escolherCreditoMenu)) {
@@ -1260,9 +1304,25 @@ private static void menuContas(Scanner input, Cliente cliente) {
             switch (escolherCreditoMenuInt) {
                 //adquirir cartao
                 case 1:
+                    Cartao cartaoCriado = cartaoService.adquirirCartaoCredito(cliente, conta);
+
+                    Seguro seguroViagem;
+
+                    if(cliente.getCategoria() == CategoriaEnum.PREMIUM){
+                        seguroViagem = seguroService.criarSeguroViagemSemCobranca(cliente, cartaoCriado);
+                    }else {
+                        seguroViagem = escolherSeguroViagemParaCartao(input, cliente, cartaoCriado);
+                    }
+
+                    Seguro seguroFraude = seguroService.criarSeguroFraude(cliente, cartaoCriado);
+
+                    //todo demonstrar todos os dados do cartao {Raphaela}
+                    //TODO demonstrar os dados do seguro objeto seguroViagem e seguroFraude {Raphaela}
+
                     break;
                 //alterar limite
                 case 2:
+                    alterarLimiteDiario(input, cliente, conta, conta.getCartaoCredito());
                     break;
                 //menu de seguro do cartao
                 case 3:
@@ -1270,6 +1330,7 @@ private static void menuContas(Scanner input, Cliente cliente) {
                     break;
                 //cancelar cartao
                 case 4:
+                    cancelarCartaoDebito(input, cliente, conta, conta.getCartaoCredito());
                     break;
                 //Voltar menu
                 case 9:

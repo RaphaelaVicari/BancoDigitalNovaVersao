@@ -6,9 +6,9 @@ import org.example.repository.ClienteRepository;
 import java.time.LocalDateTime;
 
 public class TransferenciaService {
-    private final ClienteRepository clienteRepository;
+    private final ClienteService clienteRepository;
 
-    public TransferenciaService(ClienteRepository clienteRepository) {
+    public TransferenciaService(ClienteService clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
 
@@ -38,7 +38,7 @@ public class TransferenciaService {
         contaDestino.setSaldo(contaDestino.getSaldo() + valor);
         contaOrigem.setSaldo(contaOrigem.getSaldo() - valor);
 
-        return clienteRepository.atualizarBaseDados();
+        return clienteRepository.atualizarCliente(cliente) != null;
     }
 
     private static ContaTransferencia createContaTransferencia(Cliente clienteDest,
@@ -69,6 +69,6 @@ public class TransferenciaService {
         conta.adicionarTransferencia(transferencia);
 
         conta.setSaldo(conta.getSaldo() + valor);
-        clienteRepository.atualizarBaseDados();
+        clienteRepository.atualizarCliente(cliente);
     }
 }

@@ -2,6 +2,7 @@ package org.example.util;
 
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;
+import java.util.Random;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,4 +168,16 @@ public class FuncoesUtil {
 
         return matcher.matches();
     }
+
+    public static String randomCardNumberGenerator(int howManyNumbers) {
+        Random random = new Random();
+        StringBuilder numeroCartao = new StringBuilder();
+        for (int i = 0; i < howManyNumbers; i++) {
+
+            int digito = random.nextInt(10);
+            numeroCartao.append(digito);
+        }
+        return numeroCartao.toString();
+    }
+
 }
