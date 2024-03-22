@@ -33,9 +33,13 @@ public class ClienteService {
         return clienteCadastrado;
     }
 
+    public Cliente atualizarCliente(Cliente cliente) {
+        return clienteRepository.cadastrarCliente(cliente);
+    }
+
     public Cliente clienteNovo(Cliente cliente) {
 
-        if (!FuncoesUtil.validarCPF(String.valueOf(cliente))) {
+        if (!FuncoesUtil.validarCPF(cliente.getCpfCliente())) {
             System.err.println("CPF inválido! Não foi possível cadastrar o cliente.");
             return null;
         }

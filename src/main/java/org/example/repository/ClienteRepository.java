@@ -65,8 +65,8 @@ public class ClienteRepository {
             utilidades.persistirArquivo(CLIENTES_JSON, saida);
         } catch (IOException e) {
             e.printStackTrace();
-            return true;
+            return false;
         }
-        return false;
+        return true;
     }
 }

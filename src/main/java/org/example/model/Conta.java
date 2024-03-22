@@ -108,6 +108,10 @@ public class Conta {
         return cartoes.get(TipoCartao.CREDITO);
     }
 
+    public boolean adicionarTransferencia(Transferencia transferencia) {
+        return transferencias.add(transferencia);
+    }
+
     private boolean adicionarCartao(TipoCartao debito, Cartao cartao) {
         List<Cartao> cartoes = this.cartoes.get(debito);
         boolean res = cartoes.add(cartao);
