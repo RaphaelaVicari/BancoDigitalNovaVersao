@@ -14,16 +14,14 @@ public class CartaoService {
     public CartaoService(ClienteService clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
-    //TODO implementar {Patrick}
 
     public Cartao adquirirCartaoDebito(Cliente cliente, Conta conta) {
-        //TODO nao esquecer de verificar o tipo do cliente para colocar os seguros obrigatorios de acordo com cada categoria
 
         switch (cliente.getCategoria()) {
             case SUPER:
-                return adquirirCartaoDebito(cliente, conta, 10000d);
-            case PREMIUM:
                 return adquirirCartaoDebito(cliente, conta, 5000d);
+            case PREMIUM:
+                return adquirirCartaoDebito(cliente, conta, 10000d);
             case COMUM:
                 return adquirirCartaoDebito(cliente, conta, 1000d);
             default:
@@ -33,13 +31,12 @@ public class CartaoService {
     }
 
     public Cartao adquirirCartaoCredito(Cliente cliente, Conta conta) {
-        //TODO nao esquecer de verificar o tipo do cliente para colocar os seguros obrigatorios de acordo com cada categoria
 
         switch (cliente.getCategoria()) {
             case SUPER:
-                return adquirirCartaoCredito(cliente, conta, 10000d);
-            case PREMIUM:
                 return adquirirCartaoCredito(cliente, conta, 5000d);
+            case PREMIUM:
+                return adquirirCartaoCredito(cliente, conta, 10000d);
             case COMUM:
                 return adquirirCartaoCredito(cliente, conta, 1000d);
             default:

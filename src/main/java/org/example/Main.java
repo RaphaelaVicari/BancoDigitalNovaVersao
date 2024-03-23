@@ -7,9 +7,12 @@ import org.example.util.FuncoesUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.ResolverStyle;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.stream.Collectors;
 
 public class Main {
 
@@ -156,7 +159,11 @@ public class Main {
     }
 
     private static void contaPoupanca(Scanner input, Cliente cliente) {
-    //TODO corrigir bug sobre consulta de conta inexistente
+        if(cliente.getContaPoupanca() == null) {
+            System.err.println("O cliente não possui conta poupança");
+            return;
+        }
+
         while (true) {
             System.out.println("--- Conta Poupança ---\n");
             System.out.println("Saldo Atual: ");
@@ -215,6 +222,11 @@ public class Main {
 
 
     private static void contaCorrente(Scanner input, Cliente cliente) {
+        if(cliente.getContaCorrente() == null) {
+            System.err.println("O cliente não possui conta corrente");
+            return;
+        }
+
         while (true) {
             System.out.println("Saldo Atual: ");
             System.out.printf("R$ %.2f", (cliente.getContaCorrente().getSaldo()));
@@ -252,8 +264,11 @@ public class Main {
 
         do {
             String cpfCliente = validarEntradaPreenchida(input,
-                    "Digite o CPF (ex:000.000.000-00)",
+                    "Digite o CPF (ex:000.000.000-00) ou -1 para sair",
                     "CPF não preechido");
+
+            if(cpfCliente.trim().equals("-1"))
+                return;
 
             if (!FuncoesUtil.validarFormatoCpf(cpfCliente)) {
                 System.err.println("Erro! O CPF deve estar com formatação correta.");
@@ -263,6 +278,12 @@ public class Main {
                 System.err.println("CPF inválido! O CPF deve ser valido!");
                 continue;
             }
+
+            if(clienteService.cpfJaCadastrado(cpfCliente)){
+                System.err.println("CPF já cadastrado");
+                return;
+            }
+
             novoCliente.setCpfCliente(cpfCliente);
             break;
         } while (true);
@@ -334,12 +355,17 @@ public class Main {
 
         criarContaPoupanca.setTipoConta(TipoConta.POUPANCA);
 
+        System.out.println("NOME: " + novoCliente.getNomeCliente() );
+
         criarContaPoupanca.setNumeroAgencia("0001");
         System.out.println("AGENCIA: " + criarContaPoupanca.getNumeroAgencia());
 
         criarContaPoupanca.setNumeroConta(String.valueOf(gerarNumeroConta.nextInt(9999) + 10000));
+
         System.out.println("CONTA: " + criarContaPoupanca.getNumeroConta());
         criarContaPoupanca.setDigitoConta("1");
+
+        System.out.println("DIGITO: " + criarContaPoupanca.getDigitoConta());
 
         if (definirRendimentoPoupanca(novoCliente, criarContaPoupanca))
             return;
@@ -420,14 +446,13 @@ public class Main {
     }
 
     private static void preencherDataNascimento(Scanner input, Cliente novoCliente) {
-        while (true) {
-
             do {
                 String dtNasc = validarEntradaPreenchida(input,
                         "Digite a Data de Nascimento (ex: dd/mm/yyyy)",
                         "Data de Nascimento não preenchida");
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu")
+                        .withResolverStyle(ResolverStyle.STRICT);
 
                 try {
                     LocalDate parse = LocalDate.parse(dtNasc, formatter);
@@ -447,12 +472,11 @@ public class Main {
                     break;
 
                 } catch (Exception e) {
-                    System.err.println("Formato de data informado inválido, tente novamente.");
+                    System.err.println("Entrada de data invalida, tente novamente.");
                 }
 
             } while (true);
-            break;
-        }
+
     }
 
     private static void preencherSenha(Scanner input, Cliente novoCliente) {
@@ -664,7 +688,7 @@ public class Main {
             mostrarExtratoConta(cliente.getContaCorrente());
         }
 
-        System.out.print("\n\n");
+        System.out.print("\n");
 
         if (cliente.getContaPoupanca() != null) {
             System.out.println("EXTRATO CONTA POUPANÇA");
@@ -700,7 +724,6 @@ public class Main {
 
             System.out.printf("VALOR DO PIX: %.2f\n", i.getValorTransferido());
 
-            System.out.print("\n");
         }
     }
 
@@ -926,7 +949,10 @@ public class Main {
     public static void meuPerfil(Scanner input, Cliente cliente) {
         while (true) {
             System.out.println("\n=== MEU PERFIL ===");
-            System.out.println("(1) Atualização Cadastral ");
+
+            System.out.println(cliente.toString());
+
+            System.out.println("(1) Atualização Cadastral");
             System.out.println("(2) Alterar Categoria");
             System.out.println("(9) Voltar para o menu anterior");
             System.out.println("Escolha a opção desejada: ");
@@ -982,8 +1008,6 @@ public class Main {
                 continue;
             }
             int alterar = Integer.parseInt(AlterarUsuario);
-
-            //TODO implementar alteracao dos dados cadastrais do cliente {Willians}
 
             switch (alterar) {
                 case 1:
@@ -1162,9 +1186,6 @@ public class Main {
 
             System.out.print("");
 
-            //todo listar todos os cartoes de debito(deve se listar todos os cartoes com seus status(ATIVADO, DESATIVADO))
-            // criar funcionalidades de adquirir, alterar limite e cancelar cartão(no cancelar cartao, deve ser alterar o status para cancelado na enum dele) {Patrick}
-
             String escolherDebitoMenu = input.nextLine();
             if (!FuncoesUtil.ehNumero(escolherDebitoMenu)) {
                 System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
@@ -1183,7 +1204,7 @@ public class Main {
                     break;
                 //cancelar cartao
                 case 3:
-                    cancelarCartaoDebito(input, cliente, conta, conta.getCartaoDebito());
+                    cancelarCartaoDebito(input, cliente, conta.getCartaoDebito());
                     break;
                 //Voltar menu
                 case 9:
@@ -1207,11 +1228,18 @@ public class Main {
 
     private static void cancelarCartaoDebito(Scanner input,
                                              Cliente cliente,
-                                             Conta conta,
                                              List<Cartao> cartao) {
+
+        List<Cartao> listaFiltrada = new ArrayList<>();
+
+        for(Cartao c: cartao) {
+            if(c.getStatus() != CartaoStatus.CANCELADO)
+                listaFiltrada.add(c);
+        }
+
         while (true) {
-            for (int i = 0; i < cartao.size(); i++) {
-                Cartao c = conta.getCartaoDebito().get(i);
+            for (int i = 0; i < listaFiltrada.size(); i++) {
+                Cartao c = listaFiltrada.get(i);
 
                 if (c.getStatus() == CartaoStatus.CANCELADO)
                     continue;
@@ -1239,7 +1267,7 @@ public class Main {
 
             Cartao c;
             try {
-                c = cartao.get(codigoCartao);
+                c = listaFiltrada.get(codigoCartao);
             } catch (IndexOutOfBoundsException e) {
                 System.err.println("Código do cartão invalido");
                 continue;
@@ -1350,8 +1378,6 @@ public class Main {
 
     public static void menuCartaoCredito(Scanner input, Cliente cliente, Conta conta) {
         while (true) {
-            //todo para todas as operções exceto adquirir cartao, deve ser identificado
-            // o cartao que o usuario deseja fazer as operações {Patrick}
             listarCartao(conta.getCartaoCredito());
 
             System.out.println("\n== Cartão de Crédito ==");
@@ -1398,7 +1424,7 @@ public class Main {
                     break;
                 //cancelar cartao
                 case 4:
-                    cancelarCartaoDebito(input, cliente, conta, conta.getCartaoCredito());
+                    cancelarCartaoDebito(input, cliente, conta.getCartaoCredito());
                     break;
                 //Voltar menu
                 case 9:

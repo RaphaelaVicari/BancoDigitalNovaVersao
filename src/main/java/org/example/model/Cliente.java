@@ -93,4 +93,14 @@ public class Cliente {
         this.senhaCliente = senhaCliente;
     }
 
+    @Override
+    public String toString() {
+        return
+                "CATEGORIA: " + categoria +"\n" +
+                "CPF: " + cpfCliente +"\n" +
+                "NOME: " + nomeCliente +"\n" +
+                "DATA DE NASCIMENTO: " + dataNascimentoCliente +"\n" +
+                "ENDEREÇO: " + "\n" + endereco;
+
+    }
 }
