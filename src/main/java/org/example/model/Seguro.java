@@ -1,6 +1,7 @@
 package org.example.model;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class Seguro {
 
@@ -72,5 +73,17 @@ public class Seguro {
 
     public void setFimVigencia(LocalDateTime fimVigencia) {
         this.fimVigencia = fimVigencia;
+    }
+
+    @Override
+    public String toString() {
+        return "Seguro " + descricaoCobertura +
+                "\nNúmero da Apolice: " + numeroApolice + "\n" +
+                "Cobertura: " + descricaoCobertura + "\n" +
+                "Valor Seguro: " + valorSeguro + "\n" +
+                "Valor Indenização: " + valorIndenizacao + "\n" +
+                "Data Contratação: " + dataContratacao.format(DateTimeFormatter.ISO_DATE) + "\n" +
+                "Inicio Vigência: " + inicioVigencia.format(DateTimeFormatter.ISO_DATE) + "\n" +
+                "Fim Vigência: " + fimVigencia.format(DateTimeFormatter.ISO_DATE);
     }
 }

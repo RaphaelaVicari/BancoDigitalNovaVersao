@@ -25,7 +25,6 @@ public class ClienteService {
         if(clienteCadastrado == null){
             return null;
         }
-        //todo validar metodo de login porque senha nao esta batendo
         if(!PasswordSecurity.checkSenha(loginSenha, clienteCadastrado.getSenhaCliente())){
             return null;
         }

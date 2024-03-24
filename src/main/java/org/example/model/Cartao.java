@@ -2,6 +2,7 @@ package org.example.model;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class Cartao {
@@ -105,13 +106,12 @@ public class Cartao {
 
     @Override
     public String toString() {
-        return "Cartao{" +
-                ", numeroCartao='" + numeroCartao + '\'' +
-                ", senhaCartao='" + senhaCartao + '\'' +
-                ", cvvCartao='" + cvvCartao + '\'' +
-                ", valorLimite='" + valorLimite + '\'' +
-                ", dataVencimento=" + dataVencimento +
-                '}';
+        return "Segue os daods do novo cartão: \n" + getTipoCartao()  +
+                "\nNúmero Cartão: " + numeroCartao + "\n" +
+                "Senha Cartao: " + senhaCartao  +
+                "   CVV: " + cvvCartao + "\n" +
+                "Limite: " + valorLimite + "\n" +
+                "Data Vencimento: " + dataVencimento.format(DateTimeFormatter.ISO_DATE);
     }
 
     public Double getLimitUtilizado() {

@@ -162,7 +162,7 @@ public class Main {
     }
 
     private static void contaPoupanca(Scanner input, Cliente cliente) {
-        if(cliente.getContaPoupanca() == null) {
+        if (cliente.getContaPoupanca() == null) {
             System.err.println("O cliente não possui conta poupança");
             return;
         }
@@ -225,7 +225,7 @@ public class Main {
 
 
     private static void contaCorrente(Scanner input, Cliente cliente) {
-        if(cliente.getContaCorrente() == null) {
+        if (cliente.getContaCorrente() == null) {
             System.err.println("O cliente não possui conta corrente");
             return;
         }
@@ -270,7 +270,7 @@ public class Main {
                     "Digite o CPF (ex:000.000.000-00) ou -1 para sair",
                     "CPF não preechido");
 
-            if(cpfCliente.trim().equals("-1"))
+            if (cpfCliente.trim().equals("-1"))
                 return;
 
             if (!FuncoesUtil.validarFormatoCpf(cpfCliente)) {
@@ -282,7 +282,7 @@ public class Main {
                 continue;
             }
 
-            if(clienteService.cpfJaCadastrado(cpfCliente)){
+            if (clienteService.cpfJaCadastrado(cpfCliente)) {
                 System.err.println("CPF já cadastrado");
                 return;
             }
@@ -358,7 +358,7 @@ public class Main {
 
         criarContaPoupanca.setTipoConta(TipoConta.POUPANCA);
 
-        System.out.println("NOME: " + novoCliente.getNomeCliente() );
+        System.out.println("NOME: " + novoCliente.getNomeCliente());
 
         criarContaPoupanca.setNumeroAgencia("0001");
         System.out.println("AGENCIA: " + criarContaPoupanca.getNumeroAgencia());
@@ -449,36 +449,36 @@ public class Main {
     }
 
     private static void preencherDataNascimento(Scanner input, Cliente novoCliente) {
-            do {
-                String dtNasc = validarEntradaPreenchida(input,
-                        "Digite a Data de Nascimento (ex: dd/mm/yyyy)",
-                        "Data de Nascimento não preenchida");
+        do {
+            String dtNasc = validarEntradaPreenchida(input,
+                    "Digite a Data de Nascimento (ex: dd/mm/yyyy)",
+                    "Data de Nascimento não preenchida");
 
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu")
-                        .withResolverStyle(ResolverStyle.STRICT);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/uuuu")
+                    .withResolverStyle(ResolverStyle.STRICT);
 
-                try {
-                    LocalDate parse = LocalDate.parse(dtNasc, formatter);
+            try {
+                LocalDate parse = LocalDate.parse(dtNasc, formatter);
 
-                    LocalDate now = LocalDate.now().minusYears(18);
-                    if (parse.isAfter(now)) {
-                        System.err.println("Erro! Você precisa ter mais de 18 anos para realizar o cadastro.");
-                        continue;
-                    }
-
-                    now = LocalDate.now().minusYears(100);
-                    if (parse.isBefore(now)) {
-                        System.err.println("Erro! Você não pode ter mais de 100 anos para realizar o cadastro.");
-                        continue;
-                    }
-                    novoCliente.setDataNascimentoCliente(parse);
-                    break;
-
-                } catch (Exception e) {
-                    System.err.println("Entrada de data invalida, tente novamente.");
+                LocalDate now = LocalDate.now().minusYears(18);
+                if (parse.isAfter(now)) {
+                    System.err.println("Erro! Você precisa ter mais de 18 anos para realizar o cadastro.");
+                    continue;
                 }
 
-            } while (true);
+                now = LocalDate.now().minusYears(100);
+                if (parse.isBefore(now)) {
+                    System.err.println("Erro! Você não pode ter mais de 100 anos para realizar o cadastro.");
+                    continue;
+                }
+                novoCliente.setDataNascimentoCliente(parse);
+                break;
+
+            } catch (Exception e) {
+                System.err.println("Entrada de data invalida, tente novamente.");
+            }
+
+        } while (true);
 
     }
 
@@ -686,26 +686,33 @@ public class Main {
     }
 
     private static void mostrarExtrato(Cliente cliente) {
+
         if (cliente.getContaCorrente() != null) {
-            System.out.println("----------------- INICIO EXTRATO CONTA CORRENTE -----------------");
+            if (cliente.getContaCorrente().getTransferencias().isEmpty()) {
+                System.out.println("Não há transações na conta corrente");
+                return;
+            }
+            System.out.println("-------- INICIO EXTRATO CONTA CORRENTE --------");
             mostrarExtratoConta(cliente.getContaCorrente());
-            System.out.println("----------------- FIM EXTRATO CONTA CORRENTE -----------------");
-            //todo formatar o cabeçalho
+            System.out.println("-------- FIM EXTRATO CONTA CORRENTE --------");
         }
 
         System.out.print("\n");
 
         if (cliente.getContaPoupanca() != null) {
-            System.out.println("----------------- INICIO EXTRATO CONTA POUPANÇA -----------------");
-            mostrarExtratoConta(cliente.getContaPoupanca());
+            if (cliente.getContaPoupanca().getTransferencias().isEmpty()) {
+                System.out.println("Não há transações na conta poupança");
+                return;
+            }
 
-            System.out.println("----------------- FIM EXTRATO CONTA POUPANÇA -----------------");
-            //todo formatar o cabeçalho
+            System.out.println("-------- INICIO EXTRATO CONTA POUPANÇA --------");
+            mostrarExtratoConta(cliente.getContaPoupanca());
+            System.out.println("-------- FIM EXTRATO CONTA POUPANÇA --------");
         }
 
-        if(cliente.getContaCorrente() != null)
+        if (cliente.getContaCorrente() != null)
             System.out.printf("SALDO DISPONIVEL CONTA CORRENTE: %.2f\n", cliente.getContaCorrente().getSaldo());
-        if(cliente.getContaPoupanca() != null)
+        if (cliente.getContaPoupanca() != null)
             System.out.printf("SALDO DISPONIVEL CONTA POUPANÇA: %.2f\n", cliente.getContaPoupanca().getSaldo());
 
     }
@@ -714,18 +721,19 @@ public class Main {
 
         for (Transferencia i : conta.getTransferencias()) {
 
-            if(i.getTipoTransferencia() == TipoTransferencia.PIX)
+            if (i.getTipoTransferencia() == TipoTransferencia.PIX)
                 mostrarTransferenciaPix(i);
-            else if(i.getTipoTransferencia() == TipoTransferencia.DEPOSITO)
+            else if (i.getTipoTransferencia() == TipoTransferencia.DEPOSITO)
                 mostrarDeposito(i);
         }
     }
 
     private static void mostrarDeposito(Transferencia i) {
-        System.out.println("==================" + i.getTipoTransferencia() + "===================");
+        System.out.println(".................INICIO TRANSAÇÃO DEPOSITO.................");
+        System.out.println("--------" + i.getTipoTransferencia() + "--------");
         System.out.println("DATA:" + i.getDataTransferencia().toString().substring(0, 19));
         System.out.printf("VALOR DEPÓSITO: %.2f\n", i.getValorTransferido());
-        System.out.println("\n==================DESTINO============");
+        System.out.println("\n---------------- DESTINO ----------------\n");
 
         System.out.println("NOME DESTINO:" + i.getContaDestino().getNome());
         System.out.println("CPF DESTINO:" + i.getContaDestino().getCpfCliente());
@@ -734,16 +742,17 @@ public class Main {
         System.out.println("DIGITO DESTINO:" + i.getContaDestino().getNumeroDigito());
         System.out.println("TIPO CONTA DESTINO:" + i.getContaDestino().getTipoConta());
 
-        System.out.println("--------------------------------------------------");
-        //todo formatar a saida
+        System.out.println("..................FIM TRANSAÇÃO DEPOSITO..................\n");
+
     }
 
     private static void mostrarTransferenciaPix(Transferencia i) {
-        System.out.println("-----------------" + i.getTipoTransferencia() + "----------------");
+        System.out.println("..................INICIO TRANSAÇÃO PIX..................\n");
+        System.out.println("--------" + i.getTipoTransferencia() + "--------");
         System.out.println("DATA:" + i.getDataTransferencia().toString().substring(0, 19));
         System.out.printf("VALOR PIX: %.2f\n", i.getValorTransferido());
 
-        System.out.println("\n--------------ORIGEM----------------");
+        System.out.println("\n-------------- ORIGEM ----------------\n");
 
         System.out.println("NOME ORIGEM:" + i.getContaOrigem().getNome());
         System.out.println("CPF ORIGEM:" + i.getContaOrigem().getCpfCliente());
@@ -752,9 +761,7 @@ public class Main {
         System.out.println("DIGITO ORIGEM:" + i.getContaOrigem().getNumeroDigito());
         System.out.println("TIPO CONTA ORIGEM:" + i.getContaOrigem().getTipoConta());
 
-        System.out.println("-------------------------------");
-
-        System.out.println("\n-------------DESTINO-------------");
+        System.out.println("\n---------------- DESTINO ----------------\n");
 
         System.out.println("NOME DESTINO:" + i.getContaDestino().getNome());
         System.out.println("CPF DESTINO:" + i.getContaDestino().getCpfCliente());
@@ -763,11 +770,9 @@ public class Main {
         System.out.println("DIGITO DESTINO:" + i.getContaDestino().getNumeroDigito());
         System.out.println("TIPO CONTA DESTINO:" + i.getContaDestino().getTipoConta());
 
-        System.out.println("--------------------------------------------------");
+        System.out.println("...................FIM TRANSAÇÃO PIX...................\n");
 
-        System.out.println("--------------------------------------------------");
 
-        //todo formatar saida
     }
 
     private static void transferenciaPIX(Scanner input, Cliente cliente) {
@@ -1124,7 +1129,7 @@ public class Main {
         System.out.println("Digite sua senha atual");
         String senhaAtual = input.nextLine();
         while (true) {
-               if (!clienteService.checkSenha(cliente, senhaAtual)) {
+            if (!clienteService.checkSenha(cliente, senhaAtual)) {
                 System.out.println("Senha Incorreta! - 1 Tentativa restante");
                 System.out.println("Digite sua senha atual");
                 senhaAtual = input.nextLine();
@@ -1134,12 +1139,10 @@ public class Main {
                     return;
                 }
 
-            }
-            else
-            {
-                preencherSenha(input,cliente);
+            } else {
+                preencherSenha(input, cliente);
                 String novaSenha = cliente.getSenhaCliente();
-                clienteService.clientPasswordUpdate(cliente,novaSenha);
+                clienteService.clientPasswordUpdate(cliente, novaSenha);
                 System.out.println("Senha Alterada com Sucesso!");
                 return;
             }
@@ -1278,7 +1281,7 @@ public class Main {
 
         List<Cartao> listaFiltrada = somenteCartaoValido(cartao);
 
-        if(listaFiltrada.isEmpty()){
+        if (listaFiltrada.isEmpty()) {
             System.err.println("Não há cartão para ser cancelado");
             return;
         }
@@ -1330,8 +1333,8 @@ public class Main {
     private static List<Cartao> somenteCartaoValido(List<Cartao> cartao) {
         List<Cartao> listaFiltrada = new ArrayList<>();
 
-        for(Cartao c: cartao) {
-            if(c.getStatus() != CartaoStatus.CANCELADO)
+        for (Cartao c : cartao) {
+            if (c.getStatus() != CartaoStatus.CANCELADO)
                 listaFiltrada.add(c);
         }
         return listaFiltrada;
@@ -1403,8 +1406,8 @@ public class Main {
     }
 
     private static void alterarLimiteCredito(Scanner input,
-                                            Cliente cliente,
-                                            List<Cartao> cartao) {
+                                             Cliente cliente,
+                                             List<Cartao> cartao) {
         List<Cartao> listaFiltrada = somenteCartaoValido(cartao);
 
         while (true) {
@@ -1476,16 +1479,14 @@ public class Main {
             return;
         }
 
-        System.out.println("Segue as informações de seu novo cartão:");
         System.out.println(cartaoCriado);
 
-        //TODO demonstrar os dados do cartao criado {Raphaela}
     }
 
     private static Seguro escolherSeguroViagemParaCartao(Scanner input, Cliente cliente, Cartao cartaoCriado) {
         while (true) {
 
-            String escolhaSeguro = validarEntradaPreenchida(input, "Deseja adicionar o seguro viagem ? Taxa de apenas R$ 50,00\nResponda 1 para SIM\nResponda 2 para NÃO",
+            String escolhaSeguro = validarEntradaPreenchida(input, "Deseja adicionar o seguro viagem ? Por apenas R$ 50,00 por mês \nResponda 1 para SIM\nResponda 2 para NÃO",
                     "Precisa ser preenchido a resposta do seguro");
             if (!FuncoesUtil.ehNumero(escolhaSeguro)) {
                 System.err.println("Opção inválida, digite apenas numeros!");
@@ -1531,7 +1532,6 @@ public class Main {
                 //adquirir cartao
                 case 1:
                     Cartao cartaoCriado = cartaoService.adquirirCartaoCredito(cliente, conta);
-
                     Seguro seguroViagem;
 
                     if (cliente.getCategoria() == CategoriaEnum.PREMIUM) {
@@ -1539,12 +1539,17 @@ public class Main {
                     } else {
                         seguroViagem = escolherSeguroViagemParaCartao(input, cliente, cartaoCriado);
                     }
+                    System.out.println("---------------------- CARTÃO DE CRÉDITO ---------------------");
+                    System.out.println(cartaoCriado + "\n");
+
+                    if (seguroViagem != null) {
+                        System.out.println("---------------------- SEGURO VIAGEM ---------------------");
+                        System.out.println(seguroViagem + "\n");
+                    }
 
                     Seguro seguroFraude = seguroService.criarSeguroFraude(cliente, cartaoCriado);
-
-                    //todo demonstrar todos os dados do cartao {Raphaela}
-                    //TODO demonstrar os dados do seguro objeto seguroViagem e seguroFraude {Raphaela}
-
+                    System.out.println("---------------------- SEGURO FRAUDE ---------------------");
+                    System.out.println(seguroFraude + "\n");
                     break;
                 //alterar limite
                 case 2:
@@ -1553,7 +1558,7 @@ public class Main {
                 //menu de seguro do cartao
                 case 3:
                     Cartao cartaoEscolhido = escolherCartaoDeCredito(input, conta);
-                    if(cartaoEscolhido != null)
+                    if (cartaoEscolhido != null)
                         menuSeguro(input, cliente, conta, cartaoEscolhido);
                     break;
                 //cancelar cartao
@@ -1588,7 +1593,7 @@ public class Main {
             switch (escolherSeguroMenuInt) {
                 //adquirir seguro
                 case 1:
-                    if(naoPossuiSeguroViagem(cartao)){
+                    if (naoPossuiSeguroViagem(cartao)) {
                         escolherSeguroViagemParaCartao(input, cliente, cartao);
                         System.out.println("Seguro adicionado com sucesso!");
                     }
@@ -1612,8 +1617,8 @@ public class Main {
 
     private static boolean naoPossuiSeguroViagem(Cartao cartao) {
 
-        for(Seguro s : cartao.getSeguros()){
-            if(s.getDescricaoCobertura().equals(SeguroService.SEGURO_VIAGEM_DESCRICAO)) {
+        for (Seguro s : cartao.getSeguros()) {
+            if (s.getDescricaoCobertura().equals(SeguroService.SEGURO_VIAGEM_DESCRICAO)) {
                 System.err.println("O cartão já possui seguro viagem");
                 return false;
             }
@@ -1626,7 +1631,7 @@ public class Main {
         while (true) {
             List<Seguro> segurosViagens = filtrarSeguroViagem(cartao);
 
-            if(segurosViagens.isEmpty()){
+            if (segurosViagens.isEmpty()) {
                 System.err.println("Não há seguros para cancelar");
                 return;
             }
@@ -1646,7 +1651,7 @@ public class Main {
             if (codigoSeguro == -1)
                 return;
 
-            if(!seguroService.cancelarSeguro(cliente, cartao,segurosViagens, codigoSeguro)){
+            if (!seguroService.cancelarSeguro(cliente, cartao, segurosViagens, codigoSeguro)) {
                 System.err.println("Erro ao cancelar o seguro, código invalido");
                 continue;
             }
@@ -1657,7 +1662,6 @@ public class Main {
     }
 
     private static void listarSegurosAdquiridos(Cartao cartao, List<Seguro> seguros) {
-        //todo melhorar mensagens
 
         System.out.println("Cartão: " + cartao.getNumeroCartao());
         for (int i = 0; i < seguros.size(); i++) {
@@ -1681,8 +1685,8 @@ public class Main {
 
     private static List<Seguro> filtrarSeguroViagem(Cartao cartao) {
         List<Seguro> seguros = new ArrayList<>();
-        for(Seguro s: cartao.getSeguros()){
-            if(s.getDescricaoCobertura().equals(SeguroService.SEGURO_VIAGEM_DESCRICAO))
+        for (Seguro s : cartao.getSeguros()) {
+            if (s.getDescricaoCobertura().equals(SeguroService.SEGURO_VIAGEM_DESCRICAO))
                 seguros.add(s);
         }
         return seguros;
@@ -1690,14 +1694,14 @@ public class Main {
 
     private static Cartao escolherCartaoDeCredito(Scanner input, Conta conta) {
         List<Cartao> listaFiltrada = somenteCartaoValido(conta.getCartaoCredito());
-        //todo melhorar as mensagens
-        while(true) {
+
+        while (true) {
             listarCartao(listaFiltrada);
 
             String codigo = validarEntradaPreenchida(input, "Digite o código do cartao que deseja acessar seus seguros, ou -1 para voltar",
                     "O código do seguro deve ser preenchida");
 
-            if(!FuncoesUtil.ehNumero(codigo)){
+            if (!FuncoesUtil.ehNumero(codigo)) {
                 System.err.println("O código precisa ser um numero");
                 continue;
             }
