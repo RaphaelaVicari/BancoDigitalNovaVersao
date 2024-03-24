@@ -139,6 +139,7 @@ public class Main {
         while (true) {
             System.out.println("(1) Conta Corrente");
             System.out.println("(2) Conta Poupança");
+            System.out.println("(3) Abrir Nova Conta");
             System.out.println("(9) Voltar para o menu anterior");
 
             String escolhaConta = input.nextLine();
@@ -155,11 +156,62 @@ public class Main {
                 case 2:
                     contaPoupanca(input, cliente);
                     break;
+                case 3:
+                    criarSegundaConta(input, cliente);
+                    break;
                 case 9:
                     return;
             }
         }
     }
+
+    private static void criarSegundaConta(Scanner input, Cliente cliente) {
+        while (true) {
+            boolean naotemContaCorrente = cliente.getContaCorrente() == null;
+            boolean naotemContaPoupanca = cliente.getContaPoupanca() == null;
+
+            if (!naotemContaCorrente && !naotemContaPoupanca) {
+                System.err.println("Você ja possui todas as contas");
+                return;
+            }
+
+            if (naotemContaCorrente) {
+                System.out.println("(1) Criar conta Corrente");
+            }
+            if (naotemContaPoupanca) {
+                System.out.println("(2) Criar conta Poupança");
+            }
+            System.out.println("(9) Voltar para o menu anterior");
+
+            String escolha = input.nextLine();
+
+            if (!FuncoesUtil.ehNumero(escolha)) {
+                System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
+                continue;
+            }
+
+            int escolhaInt = Integer.parseInt(escolha);
+
+            if (naotemContaCorrente && escolhaInt == 1) {
+                criarContaCorrente(cliente, input);
+                clienteService.atualizarCliente(cliente);
+                System.out.println("Conta Corrente Criada com sucesso!");
+                return;
+            } else if (naotemContaPoupanca && escolhaInt == 2) {
+                criarContaPoupanca(cliente, input);
+                clienteService.atualizarCliente(cliente);
+                System.out.println("Conta Poupança Criada com sucesso!");
+                return;
+            } else if (escolhaInt == 9) {
+                return;
+            } else {
+                System.out.println("Escolha uma opção válida");
+
+            }
+
+        }
+    }
+
 
     private static void contaPoupanca(Scanner input, Cliente cliente) {
         if (cliente.getContaPoupanca() == null) {
