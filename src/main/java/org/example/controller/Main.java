@@ -544,6 +544,72 @@ public class Main {
 
     }
 
+    private static void preencherSenhaCartaoDebito(Scanner input,
+                                                   Cliente cliente,
+                                                   Cartao cartao) {
+
+        String senha1;
+        do {
+            senha1 = validarEntradaPreenchida(input,
+                    "Crie uma senha com 6 números (ex:123456)",
+                    "Senha não preenchida");
+
+            if (!FuncoesUtil.validarSenhaDebito(senha1)) {
+                System.err.println("Senha invalida! Crie uma senha numérica de 6 digitos.");
+                continue;
+            }
+            break;
+        } while (true);
+
+        do {
+            String senha2 = validarEntradaPreenchida(input,
+                    "Digite novamente a Senha para confirmação",
+                    "Senha não preenchida");
+
+            if (!senha1.equals(senha2)) {
+                System.err.println("Senha incorreta! Verifique a senha digitada.");
+                continue;
+            }
+
+            break;
+        } while (true);
+
+        cartaoUseCase.atualizarSenhaCartao(cliente, cartao, senha1);
+    }
+
+    private static void preencherSenhaCartaoCredito(Scanner input,
+                                                    Cliente cliente,
+                                                    Cartao cartao) {
+
+        String senha1;
+        do {
+            senha1 = validarEntradaPreenchida(input,
+                    "Crie uma senha com 4 números (ex:0000)",
+                    "Senha não preenchida");
+
+            if (!FuncoesUtil.validarSenha(senha1)) {
+                System.err.println("Senha invalida! Crie uma senha numérica de 4 digitos.");
+                continue;
+            }
+            break;
+        } while (true);
+
+        do {
+            String senha2 = validarEntradaPreenchida(input,
+                    "Digite novamente a Senha para confirmação",
+                    "Senha não preenchida");
+
+            if (!senha1.equals(senha2)) {
+                System.err.println("Senha incorreta! Verifique a senha digitada.");
+                continue;
+            }
+
+            break;
+        } while (true);
+
+        cartaoUseCase.atualizarSenhaCartao(cliente, cartao, senha1);
+    }
+
     private static void preencherSenha(Scanner input, Cliente novoCliente) {
 
         String senha1;
@@ -1106,7 +1172,7 @@ public class Main {
 
         while (true) {
             System.out.println("\n== Perfil ==");
-            System.out.println("(1) Nome de preferência");
+            System.out.println("(1) Nome de acordo com o documento");
             System.out.println("(2) Data de nascimento");
             System.out.println("(3) Endereço");
             System.out.println("(4) Senha");
@@ -1125,7 +1191,7 @@ public class Main {
 
                     do {
                         String novoNome = validarEntradaPreenchida(input,
-                                "Digite o nome desejado",
+                                "Digite o nome",
                                 "Nome não preenchido");
                         if (!FuncoesUtil.validarNomeCliente(novoNome)) {
                             System.err.println("Nome inválido! O nome deve conter somente letras, com no mínimo 2 e no máximo 100 caracteres.");
@@ -1293,6 +1359,7 @@ public class Main {
             System.out.println("(1) Adquirir Cartão");
             System.out.println("(2) Alterar Limite Diário");
             System.out.println("(3) Cancelar Cartão");
+            System.out.println("(4) Alterar Senha");
             System.out.println("(9) Voltar Para o Menu Anterior");
 
             System.out.print("");
@@ -1317,12 +1384,57 @@ public class Main {
                 case 3:
                     cancelarCartaoDebito(input, cliente, conta.getCartaoDebito());
                     break;
+                case 4:
+                    alterarSenhaCartao(input, cliente, conta.getCartaoDebito());
+                    break;
                 //Voltar menu
                 case 9:
                     return;
 
             }
         }
+    }
+
+    private static void alterarSenhaCartao(Scanner input, Cliente cliente, List<Cartao> cartaoDebito) {
+        List<Cartao> cartaos = somenteCartaoValido(cartaoDebito);
+
+        while (true) {
+            listarCartao(cartaos);
+
+            System.out.println("Digite o codigo do cartao que deseja alterar a senha ou -1 para sair");
+            String cartaoEscolhido = input.nextLine();
+
+            if (!FuncoesUtil.ehNumero(cartaoEscolhido)) {
+                System.err.println("Error! Somente numero");
+                continue;
+            }
+
+            int codigoCartao = Integer.parseInt(cartaoEscolhido);
+
+            if (codigoCartao == -1)
+                return;
+
+            Cartao c;
+            try {
+                c = cartaos.get(codigoCartao);
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("Código do cartão invalido");
+                continue;
+            }
+
+            if (c.getTipoCartao() == TipoCartao.DEBITO)
+                preencherSenhaCartaoDebito(input, cliente, c);
+            else if (c.getTipoCartao() == TipoCartao.CREDITO)
+                preencherSenhaCartaoCredito(input, cliente, c);
+            else {
+                System.err.println("Tipo de cartão invalido");
+                continue;
+            }
+
+            System.out.println("Senha alterada com sucesso!");
+            break;
+        }
+
     }
 
     private static void listarCartao(List<Cartao> cartao) {
@@ -1581,6 +1693,7 @@ public class Main {
             System.out.println("(2) Alterar Limite");
             System.out.println("(3) Seguro Cartão");
             System.out.println("(4) Cancelar Cartão");
+            System.out.println("(5) Alterar Senha");
             System.out.println("(9) Voltar Para o Menu Anterior");
 
 
@@ -1629,6 +1742,9 @@ public class Main {
                     cancelarCartaoDebito(input, cliente, conta.getCartaoCredito());
                     break;
                 //Voltar menu
+                case 5:
+                    alterarSenhaCartao(input,cliente,conta.getCartaoCredito());
+                    break;
                 case 9:
                     return;
 

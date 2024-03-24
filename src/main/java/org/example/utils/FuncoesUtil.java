@@ -44,6 +44,16 @@ public class FuncoesUtil {
         return matcher.matches();
     }
 
+    public static boolean validarSenhaDebito(String senha) {
+        // Expressão regular para validar senha com exatamente 4 dígitos
+        String regexSenha = "\\d{6}";
+
+        Pattern pattern = Pattern.compile(regexSenha);
+        Matcher matcher = pattern.matcher(senha);
+
+        return matcher.matches();
+    }
+
     public static boolean validarUF(String uf) {
         // Expressão regular para validar UF com exatamente duas letras maiúsculas
         String regexUF = "^[A-Z]{2}$";

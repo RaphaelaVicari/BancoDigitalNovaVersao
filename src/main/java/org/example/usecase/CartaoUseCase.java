@@ -45,6 +45,7 @@ public class CartaoUseCase {
 
     private Cartao adquirirCartaoCredito(Cliente cliente, Conta conta, double valorLimite) {
         Cartao cartao = adquirirCartao(conta, TipoCartao.CREDITO, valorLimite);
+        cartao.setSenhaCartao(randomCardNumberGenerator(4));
         conta.adicionarCartaoCredito(cartao);
         clienteRepository.atualizarCliente(cliente);
         return cartao;
@@ -52,6 +53,7 @@ public class CartaoUseCase {
 
     private Cartao adquirirCartaoDebito(Cliente cliente, Conta conta, double valorLimite) {
         Cartao cartao = adquirirCartao(conta, TipoCartao.DEBITO, valorLimite);
+        cartao.setSenhaCartao(randomCardNumberGenerator(6));
         conta.adicionarCartaoDebito(cartao);
         clienteRepository.atualizarCliente(cliente);
         return cartao;
@@ -69,7 +71,6 @@ public class CartaoUseCase {
 
         cartaoComum.setNumeroCartao(cardNum);
         cartaoComum.setCvvCartao(randomCardNumberGenerator(3));
-        cartaoComum.setSenhaCartao(randomCardNumberGenerator(6));
         cartaoComum.setDataVencimento(LocalDate.now().plusYears(10));
         cartaoComum.setStatus(CartaoStatus.ATIVADO);
 
@@ -151,6 +152,11 @@ public class CartaoUseCase {
             }
         }
         return null;
+    }
+
+    public void atualizarSenhaCartao(Cliente cliente, Cartao cartao, String senha1) {
+        cartao.setSenhaCartao(senha1);
+        clienteRepository.atualizarCliente(cliente);
     }
 }
 
