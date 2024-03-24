@@ -55,7 +55,6 @@ public class Main {
             }
         }
     }
-    //todo alterar pastas conforme pedido do bruno {Raphaela}
     private static void fazerLogin(Scanner input) {
 
         System.out.println("--- LOGIN ---\n");
