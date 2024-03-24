@@ -55,7 +55,7 @@ public class Main {
             }
         }
     }
-
+    //todo alterar pastas conforme pedido do bruno {Raphaela}
     private static void fazerLogin(Scanner input) {
 
         System.out.println("--- LOGIN ---\n");
@@ -85,7 +85,7 @@ public class Main {
 
             if (cliente.getContaPoupanca() != null) {
                 mostrarDadosConta(cliente.getContaPoupanca());
-                System.out.printf("TAXA DE RENDIMENTO: R$ %.2f\n\n", cliente.getContaPoupanca().getTaxaRendimento());
+                System.out.printf("TAXA DE RENDIMENTO: %.2f%% \n\n", cliente.getContaPoupanca().getTaxaRendimento() * 100);
             }
 
             System.out.println("(1) Trasferência");
@@ -315,7 +315,7 @@ public class Main {
             return;
         }
 
-        System.out.println("Cadastro realizado com sucesso!");
+        System.out.println("\nCadastro realizado com sucesso!");
         System.out.println("Utilize o CPF e senha definida no cadastro para logar na conta");
     }
 
@@ -358,6 +358,8 @@ public class Main {
 
         criarContaPoupanca.setTipoConta(TipoConta.POUPANCA);
 
+        System.out.println("\n------ CONTA POUPANÇA -----\n");
+
         System.out.println("NOME: " + novoCliente.getNomeCliente());
 
         criarContaPoupanca.setNumeroAgencia("0001");
@@ -370,7 +372,7 @@ public class Main {
 
         System.out.println("DIGITO: " + criarContaPoupanca.getDigitoConta());
 
-        if (definirRendimentoPoupanca(novoCliente, criarContaPoupanca))
+        if (!definirRendimentoPoupanca(novoCliente, criarContaPoupanca))
             return;
 
         System.out.println("RENDIMENTO MENSAL: " + String.format("%.2f", criarContaPoupanca.getTaxaRendimento() * 100) + "%");
@@ -379,6 +381,8 @@ public class Main {
         System.out.println("SALDO: " + criarContaPoupanca.getSaldo());
 
         novoCliente.setContaPoupanca(criarContaPoupanca);
+
+        System.out.println("Conta Poupança criada com sucesso!");
     }
 
     private static boolean definirRendimentoPoupanca(Cliente novoCliente, ContaPoupanca criarContaPoupanca) {
@@ -408,21 +412,29 @@ public class Main {
         Random gerarNumeroConta = new Random();
 
         criarContaCorrente.setTipoConta(TipoConta.CORRENTE);
-
+        System.out.println("\n------ CONTA CORRENTE -----\n");
         criarContaCorrente.setNumeroAgencia("0001");
+
+        System.out.println("NOME: " + novoCliente.getNomeCliente());
+
         System.out.println("AGENCIA: " + criarContaCorrente.getNumeroAgencia());
+
+        criarContaCorrente.setDigitoConta("2");
+        System.out.println("DIGITO: " + criarContaCorrente.getDigitoConta());
 
         criarContaCorrente.setNumeroConta(String.valueOf(gerarNumeroConta.nextInt(9999) + 10000));
         System.out.println("CONTA: " + criarContaCorrente.getNumeroConta());
-        criarContaCorrente.setDigitoConta("2");
+
 
         if (!definirTaxaManutencao(novoCliente, criarContaCorrente))
             return;
+        System.out.println("TAXA DE MANUTENÇÃO MENSAL: " + String.format("%.2f", criarContaCorrente.getTaxaManutencao()));
 
         criarContaCorrente.setSaldo(0.00);
         System.out.println("SALDO: " + criarContaCorrente.getSaldo());
 
         novoCliente.setContaCorrente(criarContaCorrente);
+        System.out.println("Conta Corrente criada com sucesso!");
     }
 
     private static boolean definirTaxaManutencao(Cliente novoCliente, ContaCorrente criarContaCorrente) {
@@ -442,7 +454,6 @@ public class Main {
                 System.err.println("Erro, cliente sem categoria!");
                 return false;
         }
-        System.out.println("TAXA DE RENDIMENTO MENSAL: " + String.format("%.2f", taxaManutencao));
 
         criarContaCorrente.setTaxaManutencao(taxaManutencao);
         return true;
