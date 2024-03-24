@@ -85,24 +85,18 @@ public class CartaoService {
 
         switch (cliente.getCategoria()) {
             case SUPER:
-                System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
-                System.out.println("Valor minímo: R$1000,00 , Valor máximo: SEM LIMITE");
                 if (novoLimite >= 1000)
                     c.setValorLimite(novoLimite);
                 else
                     return false;
                 break;
             case PREMIUM:
-                System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
-                System.out.println("Valor minímo: R$1000,00 , Valor máximo: R$30.000,00");
                 if (novoLimite >= 1000 && novoLimite<=30000)
                     c.setValorLimite(novoLimite);
                 else
                     return false;
                 break;
             case COMUM:
-                System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
-                System.out.println("Valor minímo: R$1000,00 , Valor máximo: R$15.000,00");
                 if (novoLimite >= 1000 && novoLimite<=15000)
                     c.setValorLimite(novoLimite);
                 else

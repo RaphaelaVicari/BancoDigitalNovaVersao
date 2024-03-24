@@ -77,7 +77,7 @@ public class Main {
     public static void usuarioLogado(Scanner input, Cliente cliente) {
         while (true) {
             System.out.println("\n=== CLIENTE " + cliente.getCategoria() + " ===");
-            System.out.println("=== " + cliente.getNomeCliente() + " ===\n");
+            System.out.println("=== BEM VINDO " + cliente.getNomeCliente() + " ===\n");
 
             if (cliente.getContaCorrente() != null) {
                 mostrarDadosConta(cliente.getContaCorrente());
@@ -90,9 +90,10 @@ public class Main {
             }
 
             System.out.println("(1) Trasferência");
-            System.out.println("(2) Perfil");
-            System.out.println("(3) Cartão");
-            System.out.println("(4) Conta");
+            System.out.println("(2) Extrato");
+            System.out.println("(3) Perfil");
+            System.out.println("(4) Cartão");
+            System.out.println("(5) Conta");
             System.out.println("(9) Sair");
             System.out.println("Escolha a opção desejada: ");
 
@@ -108,12 +109,15 @@ public class Main {
                     operacaoBancaria(input, cliente);
                     break;
                 case 2:
-                    meuPerfil(input, cliente);
+                    mostrarExtrato(cliente);
                     break;
                 case 3:
-                    menuEscolhaContaCartao(input, cliente);
+                    meuPerfil(input, cliente);
                     break;
                 case 4:
+                    menuEscolhaContaCartao(input, cliente);
+                    break;
+                case 5:
                     menuContas(input, cliente);
                     break;
                 case 9:
@@ -684,47 +688,87 @@ public class Main {
 
     private static void mostrarExtrato(Cliente cliente) {
         if (cliente.getContaCorrente() != null) {
-            System.out.println("EXTRATO CONTA CORRENTE");
+            System.out.println("----------------- INICIO EXTRATO CONTA CORRENTE -----------------");
             mostrarExtratoConta(cliente.getContaCorrente());
+            System.out.println("----------------- FIM EXTRATO CONTA CORRENTE -----------------");
+            //todo formatar o cabeçalho
         }
 
         System.out.print("\n");
 
         if (cliente.getContaPoupanca() != null) {
-            System.out.println("EXTRATO CONTA POUPANÇA");
+            System.out.println("----------------- INICIO EXTRATO CONTA POUPANÇA -----------------");
             mostrarExtratoConta(cliente.getContaPoupanca());
+
+            System.out.println("----------------- FIM EXTRATO CONTA POUPANÇA -----------------");
+            //todo formatar o cabeçalho
         }
+
+        if(cliente.getContaCorrente() != null)
+            System.out.printf("SALDO DISPONIVEL CONTA CORRENTE: %.2f\n", cliente.getContaCorrente().getSaldo());
+        if(cliente.getContaPoupanca() != null)
+            System.out.printf("SALDO DISPONIVEL CONTA POUPANÇA: %.2f\n", cliente.getContaPoupanca().getSaldo());
+
     }
 
     private static void mostrarExtratoConta(Conta conta) {
 
         for (Transferencia i : conta.getTransferencias()) {
-            System.out.println("DATA:" + i.getDataTransferencia().toString().substring(0, 19));
-            System.out.println(i.getTipoTransferencia());
 
-            System.out.println("\nORIGEM");
-
-            System.out.println("NOME ORIGEM:" + i.getContaOrigem().getNome());
-            System.out.println("CPF ORIGEM:" + i.getContaOrigem().getCpfCliente());
-            System.out.println("AGENCIA ORIGEM:" + i.getContaOrigem().getNumeroAgencia());
-            System.out.println("CONTA ORIGEM:" + i.getContaOrigem().getNumeroConta());
-            System.out.println("DIGITO ORIGEM:" + i.getContaOrigem().getNumeroDigito());
-            System.out.println("TIPO CONTA ORIGEM:" + i.getContaOrigem().getTipoConta());
-
-            System.out.println("\nDESTINO");
-
-            System.out.println("NOME DESTINO:" + i.getContaDestino().getNome());
-            System.out.println("CPF DESTINO:" + i.getContaDestino().getCpfCliente());
-            System.out.println("AGENCIA DESTINO:" + i.getContaDestino().getNumeroAgencia());
-            System.out.println("CONTA DESTINO:" + i.getContaDestino().getNumeroConta());
-            System.out.println("DIGITO DESTINO:" + i.getContaDestino().getNumeroDigito());
-            System.out.println("TIPO CONTA DESTINO:" + i.getContaDestino().getTipoConta());
-
-            System.out.println();
-
-            System.out.printf("VALOR DO PIX: %.2f\n", i.getValorTransferido());
-
+            if(i.getTipoTransferencia() == TipoTransferencia.PIX)
+                mostrarTransferenciaPix(i);
+            else if(i.getTipoTransferencia() == TipoTransferencia.DEPOSITO)
+                mostrarDeposito(i);
         }
+    }
+
+    private static void mostrarDeposito(Transferencia i) {
+        System.out.println("==================" + i.getTipoTransferencia() + "===================");
+        System.out.println("DATA:" + i.getDataTransferencia().toString().substring(0, 19));
+        System.out.printf("VALOR DEPÓSITO: %.2f\n", i.getValorTransferido());
+        System.out.println("\n==================DESTINO============");
+
+        System.out.println("NOME DESTINO:" + i.getContaDestino().getNome());
+        System.out.println("CPF DESTINO:" + i.getContaDestino().getCpfCliente());
+        System.out.println("AGENCIA DESTINO:" + i.getContaDestino().getNumeroAgencia());
+        System.out.println("CONTA DESTINO:" + i.getContaDestino().getNumeroConta());
+        System.out.println("DIGITO DESTINO:" + i.getContaDestino().getNumeroDigito());
+        System.out.println("TIPO CONTA DESTINO:" + i.getContaDestino().getTipoConta());
+
+        System.out.println("--------------------------------------------------");
+        //todo formatar a saida
+    }
+
+    private static void mostrarTransferenciaPix(Transferencia i) {
+        System.out.println("-----------------" + i.getTipoTransferencia() + "----------------");
+        System.out.println("DATA:" + i.getDataTransferencia().toString().substring(0, 19));
+        System.out.printf("VALOR PIX: %.2f\n", i.getValorTransferido());
+
+        System.out.println("\n--------------ORIGEM----------------");
+
+        System.out.println("NOME ORIGEM:" + i.getContaOrigem().getNome());
+        System.out.println("CPF ORIGEM:" + i.getContaOrigem().getCpfCliente());
+        System.out.println("AGENCIA ORIGEM:" + i.getContaOrigem().getNumeroAgencia());
+        System.out.println("CONTA ORIGEM:" + i.getContaOrigem().getNumeroConta());
+        System.out.println("DIGITO ORIGEM:" + i.getContaOrigem().getNumeroDigito());
+        System.out.println("TIPO CONTA ORIGEM:" + i.getContaOrigem().getTipoConta());
+
+        System.out.println("-------------------------------");
+
+        System.out.println("\n-------------DESTINO-------------");
+
+        System.out.println("NOME DESTINO:" + i.getContaDestino().getNome());
+        System.out.println("CPF DESTINO:" + i.getContaDestino().getCpfCliente());
+        System.out.println("AGENCIA DESTINO:" + i.getContaDestino().getNumeroAgencia());
+        System.out.println("CONTA DESTINO:" + i.getContaDestino().getNumeroConta());
+        System.out.println("DIGITO DESTINO:" + i.getContaDestino().getNumeroDigito());
+        System.out.println("TIPO CONTA DESTINO:" + i.getContaDestino().getTipoConta());
+
+        System.out.println("--------------------------------------------------");
+
+        System.out.println("--------------------------------------------------");
+
+        //todo formatar saida
     }
 
     private static void transferenciaPIX(Scanner input, Cliente cliente) {
@@ -868,7 +912,7 @@ public class Main {
             }
 
             if (valor > contaOrigem.getSaldo()) {
-                System.err.println("O valor da insuficiente para completar a transação");
+                System.err.println("Saldo insuficiente para completar a transação");
                 continue;
             }
 
@@ -1176,9 +1220,11 @@ public class Main {
 
     public static void menuCartaoDebito(Scanner input, Cliente cliente, Conta conta) {
         while (true) {
+
+            System.out.println("\nCARTÕES:");
             listarCartao(conta.getCartaoDebito());
 
-            System.out.println("\n== Cartão de Debito ==");
+            System.out.println("\n\n== Cartão de Debito ==");
             System.out.println("(1) Adquirir Cartão");
             System.out.println("(2) Alterar Limite Diário");
             System.out.println("(3) Cancelar Cartão");
@@ -1200,7 +1246,7 @@ public class Main {
                     break;
                 //Alterar limite diario
                 case 2:
-                    alterarLimiteDiario(input, cliente, conta, conta.getCartaoDebito());
+                    alterarLimiteDiario(input, cliente, conta.getCartaoDebito());
                     break;
                 //cancelar cartao
                 case 3:
@@ -1217,7 +1263,7 @@ public class Main {
     private static void listarCartao(List<Cartao> cartao) {
         for (int i = 0; i < cartao.size(); i++) {
             Cartao c = cartao.get(i);
-            System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
+            System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s\n",
                     i,
                     c.getNumeroCartao(), c.getTipoCartao().toString(),
                     c.getCvvCartao(),
@@ -1230,12 +1276,7 @@ public class Main {
                                              Cliente cliente,
                                              List<Cartao> cartao) {
 
-        List<Cartao> listaFiltrada = new ArrayList<>();
-
-        for(Cartao c: cartao) {
-            if(c.getStatus() != CartaoStatus.CANCELADO)
-                listaFiltrada.add(c);
-        }
+        List<Cartao> listaFiltrada = somenteCartaoValido(cartao);
 
         while (true) {
             for (int i = 0; i < listaFiltrada.size(); i++) {
@@ -1244,7 +1285,7 @@ public class Main {
                 if (c.getStatus() == CartaoStatus.CANCELADO)
                     continue;
 
-                System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
+                System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s\n",
                         i,
                         c.getNumeroCartao(), c.getTipoCartao().toString(),
                         c.getCvvCartao(),
@@ -1281,22 +1322,25 @@ public class Main {
         }
     }
 
+    private static List<Cartao> somenteCartaoValido(List<Cartao> cartao) {
+        List<Cartao> listaFiltrada = new ArrayList<>();
+
+        for(Cartao c: cartao) {
+            if(c.getStatus() != CartaoStatus.CANCELADO)
+                listaFiltrada.add(c);
+        }
+        return listaFiltrada;
+    }
+
     private static void alterarLimiteDiario(Scanner input,
                                             Cliente cliente,
-                                            Conta conta,
                                             List<Cartao> cartao) {
-        while (true) {
-            for (int i = 0; i < cartao.size(); i++) {
-                Cartao c = cartao.get(i);
-                System.out.printf("CODIGO:%d NUMERO:%s TIPO:%s CVV:%s VENCIMENTO:%s LIMITE:%.2f STATUS:%s",
-                        i,
-                        c.getNumeroCartao(), c.getTipoCartao().toString(),
-                        c.getCvvCartao(),
-                        c.getDataVencimento().format(DateTimeFormatter.ISO_DATE),
-                        c.getValorLimite(), c.getStatus());
-            }
+        List<Cartao> listaFiltrada = somenteCartaoValido(cartao);
 
-            System.out.println("Escolha o cartao que deseja alterar o limite diario ou -1 para sair");
+        while (true) {
+            listarCartao(listaFiltrada);
+
+            System.out.println("Digite o codigo do cartao que deseja alterar o limite diario ou -1 para sair");
             String cartaoEscolhido = input.nextLine();
 
             if (!FuncoesUtil.ehNumero(cartaoEscolhido)) {
@@ -1311,13 +1355,28 @@ public class Main {
 
             Cartao c;
             try {
-                c = cartao.get(codigoCartao);
+                c = listaFiltrada.get(codigoCartao);
             } catch (IndexOutOfBoundsException e) {
                 System.err.println("Código do cartão invalido");
                 continue;
             }
 
             while (true) {
+                switch (cliente.getCategoria()) {
+                    case SUPER:
+                        System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
+                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: SEM LIMITE");
+                        break;
+                    case PREMIUM:
+                        System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
+                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: R$30.000,00");
+                        break;
+                    case COMUM:
+                        System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
+                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: R$15.000,00");
+                        break;
+                }
+
                 System.out.println("Digite o novo valor de limite diario");
                 String limDiario = input.nextLine();
 
@@ -1337,6 +1396,72 @@ public class Main {
             }
         }
     }
+
+    private static void alterarLimiteCredito(Scanner input,
+                                            Cliente cliente,
+                                            List<Cartao> cartao) {
+        List<Cartao> listaFiltrada = somenteCartaoValido(cartao);
+
+        while (true) {
+            listarCartao(listaFiltrada);
+
+            System.out.println("Digite o codigo do cartao que deseja alterar o limite diario ou -1 para sair");
+            String cartaoEscolhido = input.nextLine();
+
+            if (!FuncoesUtil.ehNumero(cartaoEscolhido)) {
+                System.err.println("Error! Somente numero");
+                continue;
+            }
+
+            int codigoCartao = Integer.parseInt(cartaoEscolhido);
+
+            if (codigoCartao == -1)
+                return;
+
+            Cartao c;
+            try {
+                c = listaFiltrada.get(codigoCartao);
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("Código do cartão invalido");
+                continue;
+            }
+
+            while (true) {
+                switch (cliente.getCategoria()) {
+                    case SUPER:
+                        System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
+                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: SEM LIMITE");
+                        break;
+                    case PREMIUM:
+                        System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
+                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: R$30.000,00");
+                        break;
+                    case COMUM:
+                        System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
+                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: R$15.000,00");
+                        break;
+                }
+
+                System.out.println("Digite o novo valor de limite diario");
+                String limDiario = input.nextLine();
+
+                if (!FuncoesUtil.ehNumero(limDiario)) {
+                    System.err.println("Error! Somente numero");
+                    continue;
+                }
+
+                double novoLimite = Double.parseDouble(limDiario);
+
+                if (!cartaoService.alterarLimiteDiario(cliente, c, novoLimite)) {
+                    System.err.println("Valor de limite inválido com sua categoria");
+                    continue;
+                }
+                System.out.println("Limite alterado com sucesso");
+                break;
+            }
+        }
+    }
+
 
     private static void adquirirCartaoDebito(Scanner input, Cliente cliente, Conta conta) {
         Cartao cartaoCriado = cartaoService.adquirirCartaoDebito(cliente, conta);
@@ -1378,9 +1503,11 @@ public class Main {
 
     public static void menuCartaoCredito(Scanner input, Cliente cliente, Conta conta) {
         while (true) {
+
+            System.out.println("CARTÕES:");
             listarCartao(conta.getCartaoCredito());
 
-            System.out.println("\n== Cartão de Crédito ==");
+            System.out.println("\n\n== Cartão de Crédito ==");
             System.out.println("(1) Adquirir Cartão");
             System.out.println("(2) Alterar Limite");
             System.out.println("(3) Seguro Cartão");
@@ -1416,7 +1543,7 @@ public class Main {
                     break;
                 //alterar limite
                 case 2:
-                    alterarLimiteDiario(input, cliente, conta, conta.getCartaoCredito());
+                    alterarLimiteDiario(input, cliente, conta.getCartaoCredito());
                     break;
                 //menu de seguro do cartao
                 case 3:
@@ -1448,7 +1575,7 @@ public class Main {
                 continue;
             }
             int escolherSeguroMenuInt = Integer.parseInt(escolherSeguroMenu);
-
+            //todo implementar
             switch (escolherSeguroMenuInt) {
                 //adquirir seguro
                 case 1:
