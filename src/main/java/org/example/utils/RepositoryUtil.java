@@ -1,4 +1,4 @@
-package org.example.util;
+package org.example.utils;
 
 import java.io.IOException;
 import java.nio.file.Files;

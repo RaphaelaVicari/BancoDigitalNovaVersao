@@ -1,21 +1,21 @@
-package org.example.service;
+package org.example.usecase;
 
 import org.example.model.Cartao;
 import org.example.model.Cliente;
 import org.example.model.Seguro;
-import org.example.util.FuncoesUtil;
+import org.example.utils.FuncoesUtil;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-public class SeguroService {
+public class SeguroUseCase {
 
     public static final String SEGURO_VIAGEM_DESCRICAO = "Seguro Viagem com Diversas coberturas";
     public static final String SEGURO_FRAUDE_DESCRICAO = "Seguro Fraude com Diversas coberturas";
 
-    private final ClienteService clienteRepository;
+    private final ClienteUseCase clienteRepository;
 
-    public SeguroService(ClienteService clienteRepository) {
+    public SeguroUseCase(ClienteUseCase clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
 

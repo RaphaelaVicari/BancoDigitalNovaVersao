@@ -1,4 +1,4 @@
-package org.example.util;
+package org.example.utils;
 
 import javax.swing.text.DefaultFormatterFactory;
 import javax.swing.text.MaskFormatter;

@@ -1,26 +1,26 @@
-package org.example.service;
+package org.example.usecase;
 
 import org.example.model.Cliente;
-import org.example.repository.ClienteRepository;
+import org.example.dao.ClienteDao;
 import org.example.security.PasswordSecurity;
-import org.example.util.FuncoesUtil;
+import org.example.utils.FuncoesUtil;
 
 import java.util.Scanner;
 
 
-public class ClienteService {
+public class ClienteUseCase {
 
-    private ClienteRepository clienteRepository;
+    private ClienteDao clienteDao;
 
-    public ClienteService(ClienteRepository clienteRepository) {
-        this.clienteRepository = clienteRepository;
+    public ClienteUseCase(ClienteDao clienteDao) {
+        this.clienteDao = clienteDao;
     }
 
     public Cliente logarCliente(String loginCpf, String loginSenha) {
 
         Cliente clienteCadastrado;
 
-        clienteCadastrado = clienteRepository.consultarClientePorCpf(loginCpf);
+        clienteCadastrado = clienteDao.consultarClientePorCpf(loginCpf);
 
         if(clienteCadastrado == null){
             return null;
@@ -33,7 +33,7 @@ public class ClienteService {
     }
 
     public Cliente atualizarCliente(Cliente cliente) {
-        return clienteRepository.cadastrarCliente(cliente);
+        return clienteDao.cadastrarCliente(cliente);
     }
 
     public Cliente clienteNovo(Cliente cliente) {
@@ -61,7 +61,7 @@ public class ClienteService {
         }
         
         cliente.setSenhaCliente(PasswordSecurity.encriptarSenha(cliente.getSenhaCliente()));
-        return clienteRepository.cadastrarCliente(cliente);
+        return clienteDao.cadastrarCliente(cliente);
 
     }
 
@@ -78,7 +78,7 @@ public class ClienteService {
     public void clientPasswordUpdate(Cliente cliente, String newPassword)
     {
        cliente.setSenhaCliente(PasswordSecurity.encriptarSenha(newPassword));
-       clienteRepository.atualizarBaseDados();
+       clienteDao.atualizarBaseDados();
     }
 
 
@@ -98,19 +98,19 @@ public class ClienteService {
             System.err.println("CPF inválido");
             return null;
         }
-        return clienteRepository.consultarClientePorCpf(cpfUtil.getCPF(true));
+        return clienteDao.consultarClientePorCpf(cpfUtil.getCPF(true));
     }
 
     public Cliente alterarDadosCliente(Cliente clienteAtualizado) {
 
-        Cliente clienteExistente = clienteRepository.consultarClientePorCpf(clienteAtualizado.getCpfCliente());
+        Cliente clienteExistente = clienteDao.consultarClientePorCpf(clienteAtualizado.getCpfCliente());
 
         if (clienteExistente != null) {
             clienteExistente.setNomeCliente(clienteAtualizado.getNomeCliente());
             clienteExistente.setDataNascimentoCliente(clienteAtualizado.getDataNascimentoCliente());
             clienteExistente.setEndereco(clienteAtualizado.getEndereco());
 
-            clienteRepository.atualizarBaseDados();
+            clienteDao.atualizarBaseDados();
 
             return clienteExistente;
         } else {

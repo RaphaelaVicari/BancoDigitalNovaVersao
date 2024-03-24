@@ -1,4 +1,4 @@
-package org.example.repository;
+package org.example.dao;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -7,13 +7,13 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import org.example.model.Cliente;
-import org.example.util.RepositoryUtil;
+import org.example.utils.RepositoryUtil;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
-public class ClienteRepository {
+public class ClienteDao {
 
     private static final String CLIENTES_JSON = "./clientes.json";
     private Map<String, Cliente> clienteMap;
@@ -22,7 +22,7 @@ public class ClienteRepository {
     private ObjectMapper mapeador;
 
 
-    public ClienteRepository() {
+    public ClienteDao() {
         utilidades = new RepositoryUtil();
         mapeador = new ObjectMapper()
                 .registerModule(new ParameterNamesModule())

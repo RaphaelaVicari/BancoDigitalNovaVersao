@@ -67,7 +67,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.example.Main</mainClass>
+                            <mainClass>org.example.controller.Main</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

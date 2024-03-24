@@ -1,9 +1,9 @@
-package org.example;
+package org.example.controller;
 
 import org.example.model.*;
-import org.example.repository.ClienteRepository;
-import org.example.service.*;
-import org.example.util.FuncoesUtil;
+import org.example.dao.ClienteDao;
+import org.example.usecase.*;
+import org.example.utils.FuncoesUtil;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -15,13 +15,13 @@ import java.util.Scanner;
 
 public class Main {
 
-    static ClienteRepository clienteRepository = new ClienteRepository();
-    static ClienteService clienteService = new ClienteService(clienteRepository);
-    static TransferenciaService transferenciaService = new TransferenciaService(clienteService);
-    static ContaService contaService = new ContaService(clienteService);
-    static CartaoService cartaoService = new CartaoService(clienteService);
+    static ClienteDao clienteDao = new ClienteDao();
+    static ClienteUseCase clienteUseCase = new ClienteUseCase(clienteDao);
+    static TransferenciaUseCase transferenciaUseCase = new TransferenciaUseCase(clienteUseCase);
+    static ContaUseCase contaUseCase = new ContaUseCase(clienteUseCase);
+    static CartaoUseCase cartaoUseCase = new CartaoUseCase(clienteUseCase);
 
-    static SeguroService seguroService = new SeguroService(clienteService);
+    static SeguroUseCase seguroUseCase = new SeguroUseCase(clienteUseCase);
 
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
@@ -64,7 +64,7 @@ public class Main {
 
         System.out.println("Digite a Senha");
         String loginSenha = input.nextLine();
-        Cliente cliente = clienteService.logarCliente(loginCpf, loginSenha);
+        Cliente cliente = clienteUseCase.logarCliente(loginCpf, loginSenha);
 
         if (cliente == null) {
             System.err.println("Erro! Senha ou CPF está inválido!");
@@ -194,12 +194,12 @@ public class Main {
 
             if (naotemContaCorrente && escolhaInt == 1) {
                 criarContaCorrente(cliente, input);
-                clienteService.atualizarCliente(cliente);
+                clienteUseCase.atualizarCliente(cliente);
                 System.out.println("Conta Corrente Criada com sucesso!");
                 return;
             } else if (naotemContaPoupanca && escolhaInt == 2) {
                 criarContaPoupanca(cliente, input);
-                clienteService.atualizarCliente(cliente);
+                clienteUseCase.atualizarCliente(cliente);
                 System.out.println("Conta Poupança Criada com sucesso!");
                 return;
             } else if (escolhaInt == 9) {
@@ -242,11 +242,11 @@ public class Main {
 
             switch (escolhaPoupancaInt) {
                 case 1:
-                    rendimento = contaService.calcularRendimentoPoupanca(cliente);
+                    rendimento = contaUseCase.calcularRendimentoPoupanca(cliente);
                     System.out.printf("O rendimento atual é R$ %.2f\n", rendimento);
                     break;
                 case 2:
-                    rendimento = contaService.calcularRendimentoFuturoAteOFinalDoMes(cliente);
+                    rendimento = contaUseCase.calcularRendimentoFuturoAteOFinalDoMes(cliente);
                     System.out.printf("O rendimento até o final do mês será de R$ %.2f\n", rendimento);
                     break;
                 case 3:
@@ -261,7 +261,7 @@ public class Main {
                         }
 
                         int days = Integer.parseInt(qtdDias);
-                        double rendimentoDiariaPrevisao = contaService.calcularRendimentoPoupancaProvisaoDias(cliente, days);
+                        double rendimentoDiariaPrevisao = contaUseCase.calcularRendimentoPoupancaProvisaoDias(cliente, days);
                         System.out.printf("Após " + days + " dias sua conta terá rendido %.2f\n", rendimentoDiariaPrevisao);
                         System.out.printf("Totalizando %.2f\n", cliente.getContaPoupanca().getSaldo() + rendimentoDiariaPrevisao);
                         break;
@@ -301,7 +301,7 @@ public class Main {
 
             switch (escolhaContaInt) {
                 case 1:
-                    double custoManutencao = contaService.calcularCustoContaCorrente(cliente);
+                    double custoManutencao = contaUseCase.calcularCustoContaCorrente(cliente);
                     System.out.printf("Custo de manutenção até a data atual é de: %.2f\n", custoManutencao);
                     System.out.printf("O custo de manutenção mensal é: %.2f\n", cliente.getContaCorrente().getTaxaManutencao());
                     break;
@@ -334,7 +334,7 @@ public class Main {
                 continue;
             }
 
-            if (clienteService.cpfJaCadastrado(cpfCliente)) {
+            if (clienteUseCase.cpfJaCadastrado(cpfCliente)) {
                 System.err.println("CPF já cadastrado");
                 return;
             }
@@ -362,7 +362,7 @@ public class Main {
         escolherCategoria(input, novoCliente);
         criarConta(input, novoCliente);
 
-        if (clienteService.clienteNovo(novoCliente) == null) {
+        if (clienteUseCase.clienteNovo(novoCliente) == null) {
             System.err.println("Erro! Cadastro não realizado");
             return;
         }
@@ -740,7 +740,7 @@ public class Main {
 
             Conta conta = escolherContaDestino(input, cliente.getContaCorrente() != null, cliente.getContaPoupanca() != null, cliente);
 
-            transferenciaService.depositar(cliente, conta, valor);
+            transferenciaUseCase.depositar(cliente, conta, valor);
 
             System.out.println("Depósito concluido com sucesso");
 
@@ -862,7 +862,7 @@ public class Main {
                     continue;
                 }
 
-                clienteDest = clienteService.consultarClientePorCpf(cpfCliente);
+                clienteDest = clienteUseCase.consultarClientePorCpf(cpfCliente);
 
                 if (clienteDest == null) {
                     System.err.println("Cliente não está cadastrado no banco");
@@ -983,7 +983,7 @@ public class Main {
                 continue;
             }
 
-            return transferenciaService.transferir(cliente, clienteDest, contaDestino, contaOrigem, valor);
+            return transferenciaUseCase.transferir(cliente, clienteDest, contaDestino, contaOrigem, valor);
         }
 
     }
@@ -1099,7 +1099,7 @@ public class Main {
         if (cliente.getContaCorrente() != null)
             definirTaxaManutencao(cliente, cliente.getContaCorrente());
 
-        clienteService.atualizarCliente(cliente);
+        clienteUseCase.atualizarCliente(cliente);
     }
 
     public static void alterarDados(Scanner input, Cliente cliente) {
@@ -1132,7 +1132,7 @@ public class Main {
                             continue;
                         }
                         cliente.setNomeCliente(novoNome);
-                        clienteService.alterarDadosCliente(cliente);
+                        clienteUseCase.alterarDadosCliente(cliente);
                         System.out.println("Nome alterado com sucesso!");
                         break;
                     } while (true);
@@ -1141,13 +1141,13 @@ public class Main {
                 case 2:
 
                     preencherDataNascimento(input, cliente);
-                    clienteService.alterarDadosCliente(cliente);
+                    clienteUseCase.alterarDadosCliente(cliente);
                     System.out.println("Data de nascimento alterado com sucesso!");
                     break;
 
                 case 3:
                     preencherEndereco(input, cliente);
-                    clienteService.alterarDadosCliente(cliente);
+                    clienteUseCase.alterarDadosCliente(cliente);
                     System.out.println("Endereço alterado com sucesso!");
                     break;
 
@@ -1192,11 +1192,11 @@ public class Main {
         System.out.println("Digite sua senha atual");
         String senhaAtual = input.nextLine();
         while (true) {
-            if (!clienteService.checkSenha(cliente, senhaAtual)) {
+            if (!clienteUseCase.checkSenha(cliente, senhaAtual)) {
                 System.out.println("Senha Incorreta! - 1 Tentativa restante");
                 System.out.println("Digite sua senha atual");
                 senhaAtual = input.nextLine();
-                if (!clienteService.checkSenha(cliente, senhaAtual)) {
+                if (!clienteUseCase.checkSenha(cliente, senhaAtual)) {
                     System.out.println("Senha Incorreta!");
                     System.out.println("Operação cancelada.");
                     return;
@@ -1205,7 +1205,7 @@ public class Main {
             } else {
                 preencherSenha(input, cliente);
                 String novaSenha = cliente.getSenhaCliente();
-                clienteService.clientPasswordUpdate(cliente, novaSenha);
+                clienteUseCase.clientPasswordUpdate(cliente, novaSenha);
                 System.out.println("Senha Alterada com Sucesso!");
                 return;
             }
@@ -1385,7 +1385,7 @@ public class Main {
                 continue;
             }
 
-            if (!cartaoService.cancelarCartao(cliente, c)) {
+            if (!cartaoUseCase.cancelarCartao(cliente, c)) {
                 System.err.println("Falha ao cancelar o cartao");
                 continue;
             }
@@ -1458,7 +1458,7 @@ public class Main {
 
                 double novoLimite = Double.parseDouble(limDiario);
 
-                if (!cartaoService.alterarLimiteDiario(cliente, c, novoLimite)) {
+                if (!cartaoUseCase.alterarLimiteDiario(cliente, c, novoLimite)) {
                     System.err.println("Valor de limite inválido com sua categoria");
                     continue;
                 }
@@ -1523,7 +1523,7 @@ public class Main {
 
                 double novoLimite = Double.parseDouble(limDiario);
 
-                if (!cartaoService.alterarLimiteCredito(cliente, c, novoLimite)) {
+                if (!cartaoUseCase.alterarLimiteCredito(cliente, c, novoLimite)) {
                     System.err.println("Valor de limite inválido com sua categoria");
                     continue;
                 }
@@ -1535,7 +1535,7 @@ public class Main {
 
 
     private static void adquirirCartaoDebito(Scanner input, Cliente cliente, Conta conta) {
-        Cartao cartaoCriado = cartaoService.adquirirCartaoDebito(cliente, conta);
+        Cartao cartaoCriado = cartaoUseCase.adquirirCartaoDebito(cliente, conta);
 
         if (cartaoCriado == null) {
             System.err.println("Erro ao criar cartão de débito, tente novamente mais tarde");
@@ -1560,7 +1560,7 @@ public class Main {
 
             switch (escolha) {
                 case 1:
-                    return seguroService.criarSeguroViagemCobrado(cliente, cartaoCriado);
+                    return seguroUseCase.criarSeguroViagemCobrado(cliente, cartaoCriado);
                 case 2:
                     return null;
                 default:
@@ -1594,11 +1594,11 @@ public class Main {
             switch (escolherCreditoMenuInt) {
                 //adquirir cartao
                 case 1:
-                    Cartao cartaoCriado = cartaoService.adquirirCartaoCredito(cliente, conta);
+                    Cartao cartaoCriado = cartaoUseCase.adquirirCartaoCredito(cliente, conta);
                     Seguro seguroViagem;
 
                     if (cliente.getCategoria() == CategoriaEnum.PREMIUM) {
-                        seguroViagem = seguroService.criarSeguroViagemSemCobranca(cliente, cartaoCriado);
+                        seguroViagem = seguroUseCase.criarSeguroViagemSemCobranca(cliente, cartaoCriado);
                     } else {
                         seguroViagem = escolherSeguroViagemParaCartao(input, cliente, cartaoCriado);
                     }
@@ -1610,7 +1610,7 @@ public class Main {
                         System.out.println(seguroViagem + "\n");
                     }
 
-                    Seguro seguroFraude = seguroService.criarSeguroFraude(cliente, cartaoCriado);
+                    Seguro seguroFraude = seguroUseCase.criarSeguroFraude(cliente, cartaoCriado);
                     System.out.println("---------------------- SEGURO FRAUDE ---------------------");
                     System.out.println(seguroFraude + "\n");
                     break;
@@ -1681,7 +1681,7 @@ public class Main {
     private static boolean naoPossuiSeguroViagem(Cartao cartao) {
 
         for (Seguro s : cartao.getSeguros()) {
-            if (s.getDescricaoCobertura().equals(SeguroService.SEGURO_VIAGEM_DESCRICAO)) {
+            if (s.getDescricaoCobertura().equals(SeguroUseCase.SEGURO_VIAGEM_DESCRICAO)) {
                 System.err.println("O cartão já possui seguro viagem");
                 return false;
             }
@@ -1714,7 +1714,7 @@ public class Main {
             if (codigoSeguro == -1)
                 return;
 
-            if (!seguroService.cancelarSeguro(cliente, cartao, segurosViagens, codigoSeguro)) {
+            if (!seguroUseCase.cancelarSeguro(cliente, cartao, segurosViagens, codigoSeguro)) {
                 System.err.println("Erro ao cancelar o seguro, código invalido");
                 continue;
             }
@@ -1749,7 +1749,7 @@ public class Main {
     private static List<Seguro> filtrarSeguroViagem(Cartao cartao) {
         List<Seguro> seguros = new ArrayList<>();
         for (Seguro s : cartao.getSeguros()) {
-            if (s.getDescricaoCobertura().equals(SeguroService.SEGURO_VIAGEM_DESCRICAO))
+            if (s.getDescricaoCobertura().equals(SeguroUseCase.SEGURO_VIAGEM_DESCRICAO))
                 seguros.add(s);
         }
         return seguros;

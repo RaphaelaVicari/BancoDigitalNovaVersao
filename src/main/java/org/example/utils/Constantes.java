@@ -1,4 +1,4 @@
-package org.example.util;
+package org.example.utils;
 
 public class Constantes {
     public static final String bemVindo = "BEM VINDO";

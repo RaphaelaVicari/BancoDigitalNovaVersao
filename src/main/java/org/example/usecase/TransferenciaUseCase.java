@@ -1,14 +1,13 @@
-package org.example.service;
+package org.example.usecase;
 
 import org.example.model.*;
-import org.example.repository.ClienteRepository;
 
 import java.time.LocalDateTime;
 
-public class TransferenciaService {
-    private final ClienteService clienteRepository;
+public class TransferenciaUseCase {
+    private final ClienteUseCase clienteRepository;
 
-    public TransferenciaService(ClienteService clienteRepository) {
+    public TransferenciaUseCase(ClienteUseCase clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
 

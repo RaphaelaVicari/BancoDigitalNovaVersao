@@ -1,15 +1,15 @@
-package org.example.service;
+package org.example.usecase;
 
 import org.example.model.Cliente;
 
 import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 
-public class ContaService {
+public class ContaUseCase {
 
-    private final ClienteService clienteRepository;
+    private final ClienteUseCase clienteRepository;
 
-    public ContaService(ClienteService clienteRepository) {
+    public ContaUseCase(ClienteUseCase clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
 

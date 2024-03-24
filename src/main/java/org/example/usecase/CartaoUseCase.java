@@ -1,17 +1,15 @@
-package org.example.service;
+package org.example.usecase;
 
 import org.example.model.*;
-import org.example.util.FuncoesUtil;
 
 import java.time.LocalDate;
-import java.util.Random;
 
-import static org.example.util.FuncoesUtil.randomCardNumberGenerator;
+import static org.example.utils.FuncoesUtil.randomCardNumberGenerator;
 
-public class CartaoService {
-    private final ClienteService clienteRepository;
+public class CartaoUseCase {
+    private final ClienteUseCase clienteRepository;
 
-    public CartaoService(ClienteService clienteRepository) {
+    public CartaoUseCase(ClienteUseCase clienteRepository) {
         this.clienteRepository = clienteRepository;
     }
 
