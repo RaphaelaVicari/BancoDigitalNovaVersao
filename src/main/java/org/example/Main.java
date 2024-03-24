@@ -907,7 +907,7 @@ public class Main {
     private static boolean realizarTransferencia(Scanner input, Cliente cliente, Cliente clienteDest, Conta contaDestino, Conta contaOrigem) {
 
         while (true) {
-            String valorTransf = validarEntradaPreenchida(input, "Digite o valor que deseja transferir utilizando ponto (ex:1.50)\nPara sair digite: -1",
+            String valorTransf = validarEntradaPreenchida(input, "Digite o valor que deseja transferir e utilize pontos se for declarar centavos (ex:5000.50)\nPara sair digite: -1",
                     "O valor precisa ser preenchido");
 
             if (!FuncoesUtil.ehNumero(valorTransf)) {
