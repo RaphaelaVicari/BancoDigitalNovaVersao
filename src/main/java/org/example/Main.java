@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.stream.Collectors;
 
 public class Main {
 
@@ -1270,6 +1269,7 @@ public class Main {
                     c.getDataVencimento().format(DateTimeFormatter.ISO_DATE),
                     c.getValorLimite(), c.getStatus());
         }
+        System.out.println();
     }
 
     private static void cancelarCartaoDebito(Scanner input,
@@ -1277,6 +1277,11 @@ public class Main {
                                              List<Cartao> cartao) {
 
         List<Cartao> listaFiltrada = somenteCartaoValido(cartao);
+
+        if(listaFiltrada.isEmpty()){
+            System.err.println("Não há cartão para ser cancelado");
+            return;
+        }
 
         while (true) {
             for (int i = 0; i < listaFiltrada.size(); i++) {
@@ -1430,19 +1435,19 @@ public class Main {
                 switch (cliente.getCategoria()) {
                     case SUPER:
                         System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
-                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: SEM LIMITE");
+                        System.out.println("Valor minímo: R$5000,00 , Valor máximo: R$ 10000,00");
                         break;
                     case PREMIUM:
                         System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
-                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: R$30.000,00");
+                        System.out.println("Valor minímo: R$10000,00 , Valor máximo: SEM LIMITE");
                         break;
                     case COMUM:
                         System.out.println("Valores disponíveis para categoria " + cliente.getCategoria() + ":");
-                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: R$15.000,00");
+                        System.out.println("Valor minímo: R$1000,00 , Valor máximo: R$5.000,00");
                         break;
                 }
 
-                System.out.println("Digite o novo valor de limite diario");
+                System.out.println("Digite o novo valor de limite ");
                 String limDiario = input.nextLine();
 
                 if (!FuncoesUtil.ehNumero(limDiario)) {
@@ -1452,7 +1457,7 @@ public class Main {
 
                 double novoLimite = Double.parseDouble(limDiario);
 
-                if (!cartaoService.alterarLimiteDiario(cliente, c, novoLimite)) {
+                if (!cartaoService.alterarLimiteCredito(cliente, c, novoLimite)) {
                     System.err.println("Valor de limite inválido com sua categoria");
                     continue;
                 }
@@ -1543,11 +1548,13 @@ public class Main {
                     break;
                 //alterar limite
                 case 2:
-                    alterarLimiteDiario(input, cliente, conta.getCartaoCredito());
+                    alterarLimiteCredito(input, cliente, conta.getCartaoCredito());
                     break;
                 //menu de seguro do cartao
                 case 3:
-                    menuSeguro(input);
+                    Cartao cartaoEscolhido = escolherCartaoDeCredito(input, conta);
+                    if(cartaoEscolhido != null)
+                        menuSeguro(input, cliente, conta, cartaoEscolhido);
                     break;
                 //cancelar cartao
                 case 4:
@@ -1561,10 +1568,11 @@ public class Main {
         }
     }
 
-    public static void menuSeguro(Scanner input) {
+    public static void menuSeguro(Scanner input, Cliente cliente, Conta conta, Cartao cartao) {
+
         while (true) {
             System.out.println("\n== Meu Seguro ==");
-            System.out.println("(1) Adquirir Seguro");
+            System.out.println("(1) Adquirir Seguro Viagem");
             System.out.println("(2) Consultar Seguros Adquiridos ");
             System.out.println("(3) Cancelar Seguro ");
             System.out.println("(9) Voltar Para o Menu Anterior");
@@ -1574,17 +1582,24 @@ public class Main {
                 System.err.println("Opção inválida, utilize somente os números mostrados no Menu!");
                 continue;
             }
+
             int escolherSeguroMenuInt = Integer.parseInt(escolherSeguroMenu);
-            //todo implementar
+
             switch (escolherSeguroMenuInt) {
                 //adquirir seguro
                 case 1:
+                    if(naoPossuiSeguroViagem(cartao)){
+                        escolherSeguroViagemParaCartao(input, cliente, cartao);
+                        System.out.println("Seguro adicionado com sucesso!");
+                    }
                     break;
                 //consultar seguro
                 case 2:
+                    listarSegurosAdquiridos(cartao, cartao.getSeguros());
                     break;
                 //cancelar seguro
                 case 3:
+                    cancelarSeguro(input, cliente, cartao);
                     break;
                 //Voltar menu
                 case 9:
@@ -1592,6 +1607,115 @@ public class Main {
 
             }
 
+        }
+    }
+
+    private static boolean naoPossuiSeguroViagem(Cartao cartao) {
+
+        for(Seguro s : cartao.getSeguros()){
+            if(s.getDescricaoCobertura().equals(SeguroService.SEGURO_VIAGEM_DESCRICAO)) {
+                System.err.println("O cartão já possui seguro viagem");
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    private static void cancelarSeguro(Scanner input, Cliente cliente, Cartao cartao) {
+        while (true) {
+            List<Seguro> segurosViagens = filtrarSeguroViagem(cartao);
+
+            if(segurosViagens.isEmpty()){
+                System.err.println("Não há seguros para cancelar");
+                return;
+            }
+
+            listarSegurosAdquiridos(cartao, segurosViagens);
+
+            System.out.println("Digite o codigo do seguro que deseja alterar o limite diario ou -1 para sair");
+            String seguroEscolhido = input.nextLine();
+
+            if (!FuncoesUtil.ehNumero(seguroEscolhido)) {
+                System.err.println("Error! Somente numero");
+                continue;
+            }
+
+            int codigoSeguro = Integer.parseInt(seguroEscolhido);
+
+            if (codigoSeguro == -1)
+                return;
+
+            if(!seguroService.cancelarSeguro(cliente, cartao,segurosViagens, codigoSeguro)){
+                System.err.println("Erro ao cancelar o seguro, código invalido");
+                continue;
+            }
+
+            System.out.println("Seguro cancelado com sucesso");
+            break;
+        }
+    }
+
+    private static void listarSegurosAdquiridos(Cartao cartao, List<Seguro> seguros) {
+        //todo melhorar mensagens
+
+        System.out.println("Cartão: " + cartao.getNumeroCartao());
+        for (int i = 0; i < seguros.size(); i++) {
+            Seguro s = seguros.get(i);
+            System.out.println("-----------------------------------");
+            System.out.printf("CODIGO: %d Apolice: %s, \nCobertura: %s Data de Contratacao: %s \n",
+                    i,
+                    s.getNumeroApolice(),
+                    s.getDescricaoCobertura(),
+                    s.getDataContratacao().format(DateTimeFormatter.ISO_DATE));
+
+            System.out.printf("Inicio da vigencia: %s Fim da vigencia: %s \n",
+                    s.getInicioVigencia().format(DateTimeFormatter.ISO_DATE),
+                    s.getFimVigencia().format(DateTimeFormatter.ISO_DATE));
+
+            System.out.printf("Valor do Seguro: %.2f Valor da Indenização: %.2f \n",
+                    s.getValorSeguro(), s.getValorIndenizacao());
+            System.out.println("-----------------------------------");
+        }
+    }
+
+    private static List<Seguro> filtrarSeguroViagem(Cartao cartao) {
+        List<Seguro> seguros = new ArrayList<>();
+        for(Seguro s: cartao.getSeguros()){
+            if(s.getDescricaoCobertura().equals(SeguroService.SEGURO_VIAGEM_DESCRICAO))
+                seguros.add(s);
+        }
+        return seguros;
+    }
+
+    private static Cartao escolherCartaoDeCredito(Scanner input, Conta conta) {
+        List<Cartao> listaFiltrada = somenteCartaoValido(conta.getCartaoCredito());
+        //todo melhorar as mensagens
+        while(true) {
+            listarCartao(listaFiltrada);
+
+            String codigo = validarEntradaPreenchida(input, "Digite o código do cartao que deseja acessar seus seguros, ou -1 para voltar",
+                    "O código do seguro deve ser preenchida");
+
+            if(!FuncoesUtil.ehNumero(codigo)){
+                System.err.println("O código precisa ser um numero");
+                continue;
+            }
+
+            int codigoCartao = Integer.parseInt(codigo);
+
+            if (codigoCartao == -1)
+                return null;
+
+            Cartao c;
+            try {
+                c = listaFiltrada.get(codigoCartao);
+            } catch (IndexOutOfBoundsException e) {
+                System.err.println("Código do cartão invalido");
+                continue;
+            }
+
+            return c;
         }
     }
 

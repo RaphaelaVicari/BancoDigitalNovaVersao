@@ -107,6 +107,34 @@ public class CartaoService {
         clienteRepository.atualizarCliente(cliente);
         return true;
     }
+    public boolean alterarLimiteCredito(Cliente cliente, Cartao c, double novoLimite) {
+
+        switch (cliente.getCategoria()) {
+            case SUPER:
+                if (novoLimite >= 5000 && novoLimite <= 10000)
+                    c.setValorLimite(novoLimite);
+                else
+                    return false;
+                break;
+            case PREMIUM:
+                if (novoLimite >= 10000)
+                    c.setValorLimite(novoLimite);
+                else
+                    return false;
+                break;
+            case COMUM:
+                if (novoLimite >= 1000 && novoLimite <= 5000)
+                    c.setValorLimite(novoLimite);
+                else
+                    return false;
+                break;
+        }
+
+        clienteRepository.atualizarCliente(cliente);
+        return true;
+    }
+
+
 
     public boolean cancelarCartao(Cliente cliente, Cartao c) {
         c.setStatus(CartaoStatus.CANCELADO);
