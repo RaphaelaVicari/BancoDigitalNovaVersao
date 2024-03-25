@@ -55,6 +55,7 @@ public class Main {
             }
         }
     }
+
     private static void fazerLogin(Scanner input) {
 
         System.out.println("--- LOGIN ---\n");
@@ -199,7 +200,6 @@ public class Main {
             } else if (naotemContaPoupanca && escolhaInt == 2) {
                 criarContaPoupanca(cliente, input);
                 clienteUseCase.atualizarCliente(cliente);
-                System.out.println("Conta Poupança Criada com sucesso!");
                 return;
             } else if (escolhaInt == 9) {
                 return;
@@ -485,7 +485,7 @@ public class Main {
         System.out.println("SALDO: " + criarContaCorrente.getSaldo());
 
         novoCliente.setContaCorrente(criarContaCorrente);
-        System.out.println("Conta Corrente criada com sucesso!");
+
     }
 
     private static boolean definirTaxaManutencao(Cliente novoCliente, ContaCorrente criarContaCorrente) {
@@ -738,8 +738,8 @@ public class Main {
             }
 
             Conta conta = escolherContaDestino(input, cliente.getContaCorrente() != null, cliente.getContaPoupanca() != null, cliente);
-             if (conta==null)
-                 continue;
+            if (conta == null)
+                continue;
             transferenciaUseCase.depositar(cliente, conta, valor);
 
             System.out.println("Depósito concluido com sucesso");

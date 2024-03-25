@@ -106,7 +106,7 @@ public class Cartao {
 
     @Override
     public String toString() {
-        return "Segue os daods do novo cartão: \n" + getTipoCartao()  +
+        return "Segue os dados do novo cartão: \n" + getTipoCartao()  +
                 "\nNúmero Cartão: " + numeroCartao + "\n" +
                 "Senha Cartao: " + senhaCartao  +
                 "   CVV: " + cvvCartao + "\n" +
