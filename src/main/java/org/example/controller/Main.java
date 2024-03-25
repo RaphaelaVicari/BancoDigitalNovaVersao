@@ -738,7 +738,8 @@ public class Main {
             }
 
             Conta conta = escolherContaDestino(input, cliente.getContaCorrente() != null, cliente.getContaPoupanca() != null, cliente);
-
+             if (conta==null)
+                 continue;
             transferenciaUseCase.depositar(cliente, conta, valor);
 
             System.out.println("Depósito concluido com sucesso");
